@@ -2,7 +2,7 @@
 // of one page (release notes #september-24-2026 …) keeps one article per section when the source says
 // so, and a feed that garbles different characters on every load keeps one version. Before the
 // fixes all three became revisions of one article on every fetch. A changelog whose updates sit under
-// date headings (api-docs.deepseek.com/zh-cn/updates) yields its updates, not the headings.
+// date headings (car-docs.xiaomi.com/zh-cn/updates) yields its updates, not the headings.
 import { tag } from "./setup.ts";
 import assert from "node:assert/strict";
 import http from "node:http";
@@ -22,7 +22,7 @@ const DAY = 86_400_000;
 const item = (title: string, link: string, daysAgo: number) =>
   `<item><title>${title}</title><link>${link}</link><guid>${link}</guid><pubDate>${new Date(Date.now() - daysAgo * DAY).toUTCString()}</pubDate><description>${title} summary</description></item>`;
 const feeds: Record<string, string> = {
-  // developers.openai.com lists one video twice, under two titles.
+  // A developer feed lists one video twice, under two titles.
   "/dup.xml": [item(`DevDay — optimization breakout ${T}`, `https://example.org/watch-${T}`, 0.1), item(`Balance accuracy, latency, and cost ${T}`, `https://example.org/watch-${T}`, 0.1)].join(""),
   "/notes.xml": ["september-24", "september-23", "september-22"].map((d, i) => item(`Release notes — ${d} ${T}`, `https://example.org/notes-${T}/overview#${d}`, 0.1 + i)).join(""),
 };
@@ -33,18 +33,18 @@ const lose = (s: string, at: number, n: number) => s.slice(0, at) + "\uFFFD".rep
 const title = `维密重回上海淮海路，中国市场进入扩店阶段 ${T}`;
 const garbledLoads = [[title, story], [title, lose(story, 120, 3)], [lose(title, 2, 2), lose(story, 700, 2)]];
 let garbledLoad = 0;
-// A trimmed copy of the DeepSeek API changelog (Docusaurus): each date heading, in either of the two
+// A trimmed copy of a car maker's changelog (Docusaurus): each date heading, in either of the two
 // label styles the page uses, is followed by the update headings that belong to it.
 const heading = (level: number, id: string, text: string) =>
   `<h${level} class="anchor" id="${id}">${text}<a href="#${id}" class="hash-link" title="${text}的直接链接">\u200b</a></h${level}>`;
 const changelog = `<!doctype html><html><body><article><div class="theme-doc-markdown markdown"><div class="row"><div class="col"><h1>更新日志</h1><hr>
 ${heading(2, "时间-2026-09-10", "时间: 2026-09-10")}
-${heading(3, "deepseek-v41-flash-发布", `DeepSeek-V4.1-Flash 发布 ${T}`)}<p>今天，我们正式发布 DeepSeek-V4.1-Flash 模型。</p>
+${heading(3, "xiaomi-su7-ultra-发布", `小米 SU7 Ultra 发布 ${T}`)}<p>今天，我们正式发布 小米 SU7 Ultra。</p>
 ${heading(2, "时间-2025-12-01", "时间: 2025-12-01")}
-${heading(3, "deepseek-v32", `DeepSeek-V3.2 ${T}`)}<p>DeepSeek-V3.2 正式版上线。</p>
-${heading(3, "deepseek-v32-speciale", `DeepSeek-V3.2-Speciale ${T}`)}<p>DeepSeek-V3.2-Speciale 临时接口上线。</p>
+${heading(3, "xiaomi-su7", `小米 SU7 ${T}`)}<p>小米 SU7 正式版上线。</p>
+${heading(3, "xiaomi-su7-max", `小米 SU7 Max ${T}`)}<p>小米 SU7 Max 限量版上线。</p>
 ${heading(2, "时间2024-05-17", "时间：2024-05-17")}
-${heading(3, "deepseek-chat-4", `deepseek-chat ${T}`)}<p>deepseek-chat 模型升级为 DeepSeek-V2-0517。</p>
+${heading(3, "xiaomi-ota-4", `小米 OTA ${T}`)}<p>小米 OTA 升级为 HyperOS 2。</p>
 </div></div></div></article></body></html>`;
 const server = http.createServer((req, res) => {
   if (req.url === "/updates/") {
@@ -111,10 +111,10 @@ test("a changelog's date headings date its updates and are no articles themselve
   assert.deepEqual(
     rows.map((r) => [decodeURIComponent(r.url.replace(/^.*#/, "#")), r.title.replace(` ${T}`, ""), r.published_at?.toISOString()]),
     [
-      ["#deepseek-v41-flash-发布", "DeepSeek-V4.1-Flash 发布", "2026-09-09T16:00:00.000Z"],
-      ["#deepseek-v32", "DeepSeek-V3.2", "2025-11-30T16:00:00.000Z"],
-      ["#deepseek-v32-speciale", "DeepSeek-V3.2-Speciale", "2025-11-30T16:00:00.000Z"],
-      ["#deepseek-chat-4", "deepseek-chat", "2024-05-16T16:00:00.000Z"],
+      ["#xiaomi-su7-ultra-发布", "小米 SU7 Ultra 发布", "2026-09-09T16:00:00.000Z"],
+      ["#xiaomi-su7", "小米 SU7", "2025-11-30T16:00:00.000Z"],
+      ["#xiaomi-su7-max", "小米 SU7 Max", "2025-11-30T16:00:00.000Z"],
+      ["#xiaomi-ota-4", "小米 OTA", "2024-05-16T16:00:00.000Z"],
     ],
   );
 });

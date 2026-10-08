@@ -37,7 +37,7 @@ const socialdata = await stub((_hit, req) => {
     // Looked up by the post's id; the post without one answers with the post alone.
     return article === WITH_ARTICLE
       ? { id_str: article, article: { title: "To Seek a Newer World", content_state: { blocks: [
-          { type: "unstyled", text: "World Labs is joining AMD." }, { type: "atomic", text: " " }, { type: "header-two", text: "Why" }, { type: "blockquote", text: "Come, my friends" },
+          { type: "unstyled", text: "GAC is joining Hyundai." }, { type: "atomic", text: " " }, { type: "header-two", text: "Why" }, { type: "blockquote", text: "Come, my friends" },
         ] } } }
       : { id_str: article };
   }
@@ -74,11 +74,11 @@ test("a post that links an X Article waits for extraction, which brings the arti
   assert.equal(a!.title, "To Seek a Newer World", "a bare link takes the article's title");
   assert.equal(a!.body_status, "ok");
   assert.equal(a!.revision, 2);
-  assert.equal(a!.x_article.text, "World Labs is joining AMD.\n\n## Why\n\n> Come, my friends");
-  assert.match(a!.body_text, /^https:\/\/x\.com\/i\/article\/777\n\n# To Seek a Newer World\n\nWorld Labs is joining AMD\./);
+  assert.equal(a!.x_article.text, "GAC is joining Hyundai.\n\n## Why\n\n> Come, my friends");
+  assert.match(a!.body_text, /^https:\/\/x\.com\/i\/article\/777\n\n# To Seek a Newer World\n\nGAC is joining Hyundai\./);
 
   const input = (await loadAnalyzeInput(id))!;
-  assert.match(String(input.xPost!.text), /【X 长文】To Seek a Newer World\n\nWorld Labs is joining AMD\./, "every judging step reads the article");
+  assert.match(String(input.xPost!.text), /【X 长文】To Seek a Newer World\n\nGAC is joining Hyundai\./, "every judging step reads the article");
   assert.doesNotMatch(renderContext(input), /正文未抓到/);
 
   // The same post read again (a later search, an overlap) is the version already seen.

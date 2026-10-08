@@ -76,7 +76,7 @@ test("previews keep exactly what collection stores, under the source's URL, cate
   const at = new Date(Date.now() - 60_000).toISOString();
   const kept = `${base}/article${path}/kept/`;
   lists.set(path, [
-    { id: "kept", date: at, link: `${kept}1`, category: "AI" },
+    { id: "kept", date: at, link: `${kept}1`, category: "Cars" },
     { id: "denied-prefix", date: at, link: `${kept}private/2` },
     { id: "outside-allowed", date: at, link: `${base}/elsewhere/3` },
     { id: "denied-category", date: at, link: `${kept}4`, category: "Sports" },

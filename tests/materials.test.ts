@@ -101,23 +101,23 @@ test("simultaneous first reports of one URL create one article", async () => {
 });
 
 test("another source listing the same article records a discovery, not a revision", async () => {
-  // Hacker News：AI 热帖 lists the English title, the buzzing.cc mirror a Chinese translation.
+  // Hacker News：car 热帖 lists the English title, the buzzing.cc mirror a Chinese translation.
   const url = `https://example.com/listed-twice-${tag()}`;
-  const own = await upsertMaterial({ sourceId: SOURCE, url, title: "One month without AI", excerpt: "own summary", via: "fetch" });
+  const own = await upsertMaterial({ sourceId: SOURCE, url, title: "One month without new cars", excerpt: "own summary", via: "fetch" });
   for (let i = 0; i < 3; i++) {
-    const mirror = await upsertMaterial({ sourceId: OTHER, url, title: "没有AI的一个月", excerpt: "译文摘要", via: "fetch" });
+    const mirror = await upsertMaterial({ sourceId: OTHER, url, title: "没有新车的一个月", excerpt: "译文摘要", via: "fetch" });
     assert.deepEqual([mirror.articleId, mirror.revised], [own.articleId, false]);
-    assert.equal((await upsertMaterial({ sourceId: SOURCE, url, title: "One month without AI", excerpt: "own summary", via: "fetch" })).revised, false);
+    assert.equal((await upsertMaterial({ sourceId: SOURCE, url, title: "One month without new cars", excerpt: "own summary", via: "fetch" })).revised, false);
   }
   const a = await state(own.articleId);
-  assert.deepEqual([a.revision, a.title], [1, "One month without AI"]);
+  assert.deepEqual([a.revision, a.title], [1, "One month without new cars"]);
   const found = await sql<{ source_id: string }[]>`SELECT source_id FROM article_discoveries WHERE article_id = ${own.articleId}`;
   assert.ok(found.some((d) => d.source_id === OTHER), "the other source still counts as a discovery");
 });
 
 test("an article linking to a tweet is stored separately from the tweet", async () => {
   const tweetId = `${Date.now()}123456`;
-  const url = `https://x.com/openai/status/${tweetId}`;
+  const url = `https://x.com/byd/status/${tweetId}`;
   const tweet = await upsertMaterial({ sourceId: SOURCE, url, title: "Original tweet", via: "fetch" });
   const article = await upsertMaterial({
     sourceId: OTHER, url: `https://example.com/report-${tag()}?related=${url}`, title: "Independent report", via: "fetch",
@@ -145,10 +145,10 @@ test("another source reporting an imported article first does not set its baseli
 });
 
 test("a return to an earlier version is not a revision", async () => {
-  // One listing with two cards for one post ("Company Mistral and Mozilla…" / "Mistral and Mozilla…").
+  // One listing with two cards for one post ("Company BYD and Mozilla…" / "BYD and Mozilla…").
   const url = `https://example.com/two-cards-${tag()}`;
-  const a = { sourceId: SOURCE, url, title: "Company Mistral and Mozilla", excerpt: "card", via: "fetch" as const };
-  const b = { ...a, title: "Mistral and Mozilla" };
+  const a = { sourceId: SOURCE, url, title: "Company BYD and Mozilla", excerpt: "card", via: "fetch" as const };
+  const b = { ...a, title: "BYD and Mozilla" };
   const first = await upsertMaterial(a);
   assert.equal((await upsertMaterial(b)).revised, true, "a version not seen before is a revision");
   await sql`UPDATE articles SET processing_state = 'analyzed' WHERE id = ${first.articleId}`;
@@ -157,8 +157,8 @@ test("a return to an earlier version is not a revision", async () => {
     assert.equal((await upsertMaterial(b)).revised, false, "and to the current one again");
   }
   const s = await state(first.articleId);
-  assert.deepEqual([s.revision, s.title, s.processing_state], [2, "Mistral and Mozilla", "analyzed"], "nothing to analyse or publish again");
-  assert.equal((await upsertMaterial({ ...a, title: "Mistral and Mozilla, updated" })).revised, true, "a new version still is");
+  assert.deepEqual([s.revision, s.title, s.processing_state], [2, "BYD and Mozilla", "analyzed"], "nothing to analyse or publish again");
+  assert.equal((await upsertMaterial({ ...a, title: "BYD and Mozilla, updated" })).revised, true, "a new version still is");
   assert.equal((await state(first.articleId)).revision, 3);
 });
 

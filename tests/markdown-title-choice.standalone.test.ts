@@ -8,7 +8,7 @@ const source = { config: { url: "https://publisher.example/blog", allowUrlPrefix
 const read = (labels: string[]) => fromMarkdown(labels.map(label => `[${label}](https://publisher.example/blog/new-release)`).join("\n\n"), "https://publisher.example", source);
 
 test("a repeated article takes its actual headline after an earlier call to action", () => {
-  assert.deepEqual(read(["Read more", "A new model release", "Read more"]), [{ url: "https://publisher.example/blog/new-release", title: "A new model release" }]);
+  assert.deepEqual(read(["Read more", "A new car launch", "Read more"]), [{ url: "https://publisher.example/blog/new-release", title: "A new car launch" }]);
 });
 
 test("a clean headline replaces a repeated card label that swallowed its whole summary", () => {

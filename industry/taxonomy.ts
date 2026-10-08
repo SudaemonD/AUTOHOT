@@ -6,148 +6,178 @@
  * 网页上的类别（筛选栏、卡片角标、RSS 分类订阅）。key 是网址和接口里的身份，上线后不要改。
  * section 是日报里的分节标题（几个类别可以共用一节，按这里的顺序排）；guide 告诉结构抽取模型这一类收什么、
  * 和相邻类别的边界在哪（总的归类原则写在 prompts/structure.md 里）。
- * commentary 标出评论类（教程、观点）：日报写过的事又有评论类的后续报道，只占一行快讯（报道它的信源够多时除外）。
+ * commentary 标出评论类（评测、观点）：日报写过的事又有评论类的后续报道，只占一行快讯（报道它的信源够多时除外）。
  * 没归上类的资料在日报里放进第一个 key 为 industry 的类别所在的节（没有就放最后一节）。
  * feedLabel 是分类 RSS 标题里的名字（不写就用 label）。公开接口、RSS 和 MCP 里要把一类并进另一类发布，写在站点设置里（site/site.ts 的 PUBLIC_CATEGORIES）。
  */
 export const CATEGORIES = [
-  { key: "ai-models", label: "模型", feedLabel: "AI 模型", section: "模型发布/更新", guide: "模型本身的发布、版本、权重开放、能力或价格变化，以及既有榜单上的模型成绩。公布一次跑分不是发布新基准，也不是教程。" },
-  { key: "ai-products", label: "产品", feedLabel: "AI 产品", section: "产品发布/更新", guide: "可使用的 AI 产品、功能、应用、工具、API、平台和工程组件的发布更新。模型厂商发布的推理框架、算子库、硬件适配组件仍是产品，不能因为厂商名归成模型。" },
-  { key: "industry", label: "行业", feedLabel: "行业动态", section: "行业动态", guide: "已发生的公司经营、融资并购、人事、合作、诉讼、政策、真实安全事故及调查进展。新闻由当事人发帖、带有态度，也不因此变成观点。" },
-  { key: "paper", label: "论文", feedLabel: "论文", section: "论文研究", guide: "以新研究方法、实验设计与发现为核心的论文、技术报告、新基准或研究数据集。系统性红队实验属于研究；既有榜单成绩归模型，真实事故的新闻调查归行业。" },
-  { key: "tip", label: "教程", section: "技巧与观点", guide: "读者可以照着使用的方法、提示词、工具用法、工程实践复盘与技术讲解。重点是可复用的做法；单纯发布工具归产品，只有态度和预测而无做法归观点。", commentary: true },
-  { key: "opinion", label: "观点", section: "技巧与观点", guide: "重点是作者的解释、判断、主张、预测、评论或访谈观点。讨论市场不自动归行业，作者是名人不自动归观点。", commentary: true },
+  { key: "new-cars", label: "新车", section: "新车上市/改款", guide: "全新车型、换代或年度改款的正式上市、预售、交付、定价与配置公布。同一款车的官图、配置、价格与续航版本属于同一次发布；竞品对比与试驾体验归评测，行业层面的销量与经营归行业。" },
+  { key: "tech", label: "技术", feedLabel: "汽车技术", section: "技术与智驾", guide: "电池、电机、电控（三电）、整车平台与电子电气架构、智能驾驶与智能座舱、芯片与传感器、OTA 大版本的技术发布与能力变化。以零部件或供应链为主线的报道不算；车型本身的上市归新车，技术发布之后的第三方实测归评测。" },
+  { key: "industry", label: "行业", feedLabel: "行业动态", section: "行业动态", guide: "已发生的车企经营、销量与交付、财报、融资并购、人事、合作、价格与渠道变化、出海与产能。月度与周度销量榜归这里；新闻由当事方发帖、带有态度，也不因此变成观点。" },
+  { key: "policy", label: "政策", feedLabel: "政策法规", section: "政策法规", guide: "法规、国家标准、准入与资质、补贴与双积分、召回与缺陷调查、监管处罚、出口关税与海外合规。征求意见稿与正式发布分开记；真实事故的调查进展归这里，围绕事故的技术分析归技术、实测归评测。" },
+  { key: "review", label: "评测", section: "评测与观点", guide: "机构或媒体对具体车型、技术或产品的实测、续航与智驾评测、横评与榜单。导购、促销优惠与厂商组织的试驾软文不归这里。", commentary: true },
+  { key: "opinion", label: "观点", section: "评测与观点", guide: "重点是作者的解释、判断、主张、预测、评论或访谈观点。讨论销量不自动归行业，作者是名人不自动归观点。", commentary: true },
 ] as const satisfies ReadonlyArray<{ key: string; label: string; feedLabel?: string; section: string; guide: string; commentary?: true }>;
 
 /**
- * 这个行业最受关注的一类发布（AI 行业是新模型）：日报报头的“N 个新模型”、改分类后修订已出的报告都按它数。
- * category 是类别，tag 是标签，两者都对上才算；unit 接在数字后面。
- * 没有这样一类的行业设成 null，报头就不显示这个数。
+ * 这个行业最受关注的一类发布（汽车行业是新车上市）：日报报头的“N 款新车”、改分类后修订已出的报告都按它数。
+ * category 是类别，tag 是标签，两者都对上才算；年度改款与配置调整不算，所以只数“新车发布”。
+ * unit 接在数字后面。没有这样一类的行业设成 null，报头就不显示这个数。
  */
-export const RELEASE: { category: string; tag: string; unit: string } | null = { category: "ai-models", tag: "模型发布", unit: "个新模型" };
+export const RELEASE: { category: string; tag: string; unit: string } | null = { category: "new-cars", tag: "新车发布", unit: "款新车" };
 
 /** 周报月报的总述可以直接写、不必在报道里找到出处的行业通用词（小写）。站名会自动算进去。 */
-export const PLAIN_TERMS: readonly string[] = ["ai", "api", "llm", "gpu", "agi", "ceo", "ipo"];
+export const PLAIN_TERMS: readonly string[] = ["ev", "bev", "phev", "erev", "suv", "mpv", "ota", "noa", "adas", "l2", "l3", "cltc", "wltc", "nedc", "ceo", "ipo"];
 
 /**
  * 内容理解一步给每篇资料判的“内容类型”（写在 prompts/content-understanding.md 里，改了类型要同步改那份提示词）。
  * 评分提示词（prompts/selection-score.md）按类型给五个维度不同的权重。
  */
-export const ITEM_TYPES = ["model_release", "product_launch", "tool_or_prompt", "research_paper", "industry_event", "opinion_analysis", "tutorial_explainer"] as const;
+export const ITEM_TYPES = ["new_car_launch", "product_update", "how_to_guide", "tech_report", "industry_event", "opinion_analysis", "review_explainer"] as const;
 
 // ── 标签词表 ────────────────────────────────────────────────────────────────────────────
 
-/** 每篇资料的第一个标签必须是这些“分类标签”之一。 */
+/** 每篇资料的第一个标签必须是这些“分类标签”之一。最后一个是兜底，新增分类标签要加在它前面。 */
 export const CATEGORY_TAGS = [
-  "产品更新", "模型发布", "论文/研究", "开源/仓库", "教程/实践", "现象/趋势", "大佬观点", "评测/基准", "安全/对齐", "行业动态", "政策/监管",
-  "非AI/通用工具", "其他",
+  "新车发布", "改款/年款", "技术发布", "销量/交付", "行业动态", "政策/监管", "召回/安全",
+  "评测", "对比/横评", "用车/攻略", "观点/分析", "趋势/现象", "非汽车/通用",
+  "其他",
 ] as const;
 
 /** 可选的主题标签。 */
 export const TOPIC_TAGS = [
-  "Agent", "编码", "推理", "多模态", "语音", "视频", "图像生成", "RAG", "端侧", "数据/训练", "搜索", "部署/工程", "开源生态", "具身智能", "MCP/工具调用",
+  "纯电", "插混/增程", "换电", "800V/快充", "电池", "智驾", "智舱", "车机/OTA", "端到端", "激光雷达", "底盘/操控", "安全/碰撞", "出口/出海", "新势力", "价格/权益",
 ] as const;
 
-/** 可选的实体标签（公司、机构、平台）。 */
-export const ENTITY_TAGS = ["OpenAI", "Anthropic", "DeepSeek", "DeepMind", "Google", "Meta", "Microsoft", "xAI", "Hugging Face", "GitHub", "arXiv"] as const;
+/** 可选的实体标签（公司、品牌）。必须是下面 ENTITIES 里 displayTag 非 null 的那些名字。 */
+export const ENTITY_TAGS = ["比亚迪", "特斯拉", "小米汽车", "华为", "蔚来", "小鹏", "理想", "零跑", "吉利", "长安", "奇瑞", "长城", "丰田", "大众", "宝马"] as const;
 
 /** 模型常写的近义词，统一成词表里的写法。 */
 export const TAG_SYNONYMS: Readonly<Record<string, string>> = {
-  "教程/玩法": "教程/实践", "技巧/最佳实践": "教程/实践", "合作/生态": "行业动态", "融资/收购": "行业动态", "公司动态": "行业动态",
-  合作: "行业动态", 生态: "行业动态", 融资: "行业动态", 收购: "行业动态", 投资: "行业动态", 并购: "行业动态",
-  政策: "政策/监管", 监管: "政策/监管", 法规: "政策/监管", 安全: "安全/对齐", 对齐: "安全/对齐",
-  论文: "论文/研究", 研究: "论文/研究", paper: "论文/研究", papers: "论文/研究",
-  "open-source": "开源/仓库", 开源: "开源/仓库", 仓库: "开源/仓库", repo: "开源/仓库",
-  教程: "教程/实践", 玩法: "教程/实践", 指南: "教程/实践", 技巧: "教程/实践", 最佳实践: "教程/实践", 实践: "教程/实践",
-  产品: "产品更新", 更新: "产品更新", 发布: "模型发布", 模型: "模型发布", 趋势: "现象/趋势", 现象: "现象/趋势", 观点: "大佬观点",
-  视频生成: "视频", 非ai: "非AI/通用工具", "non-ai": "非AI/通用工具", 通用工具: "非AI/通用工具", 工程工具: "非AI/通用工具",
-  安全扫描: "非AI/通用工具", devops: "非AI/通用工具", 行业: "行业动态", 动态: "行业动态",
+  "新车/上市": "新车发布", 上市: "新车发布", 预售: "新车发布", 发布: "新车发布", 换代: "新车发布", 首款: "新车发布", 新车: "新车发布",
+  改款: "改款/年款", 年款: "改款/年款", 小改款: "改款/年款", 新版本: "改款/年款",
+  三电: "技术发布", 电池: "技术发布", 电驱: "技术发布", 电控: "技术发布", 平台: "技术发布", 架构: "技术发布",
+  芯片: "技术发布", 智驾: "技术发布", 智舱: "技术发布", 座舱: "技术发布", 开源: "技术发布", 技术: "技术发布",
+  销量: "销量/交付", 交付: "销量/交付", 上险量: "销量/交付", 销量榜: "销量/交付", 月销: "销量/交付", 周销: "销量/交付",
+  融资: "行业动态", 收购: "行业动态", 并购: "行业动态", 投资: "行业动态", 合作: "行业动态", 人事: "行业动态",
+  价格战: "行业动态", 降价: "行业动态", 涨价: "行业动态", 渠道: "行业动态", 出海: "行业动态", 行业: "行业动态", 动态: "行业动态",
+  政策: "政策/监管", 监管: "政策/监管", 法规: "政策/监管", 国标: "政策/监管", 准入: "政策/监管", 补贴: "政策/监管", 双积分: "政策/监管", 关税: "政策/监管",
+  召回: "召回/安全", 缺陷: "召回/安全",
+  实测: "评测", 试驾: "评测", 续航测试: "评测", 智驾评测: "评测",
+  对比: "对比/横评", 横评: "对比/横评", "对比评测": "对比/横评",
+  教程: "用车/攻略", 指南: "用车/攻略", 技巧: "用车/攻略", 用车: "用车/攻略", 攻略: "用车/攻略", 保养: "用车/攻略", 充电: "用车/攻略",
+  观点: "观点/分析", 访谈: "观点/分析", 分析: "观点/分析", 复盘: "观点/分析", 预测: "观点/分析", 评论: "观点/分析",
+  趋势: "趋势/现象", 现象: "趋势/现象",
+  导购: "非汽车/通用", 促销: "非汽车/通用", 优惠: "非汽车/通用", 团购: "非汽车/通用", 二手车: "非汽车/通用",
+  零部件: "非汽车/通用", 供应链: "非汽车/通用", 商用车: "非汽车/通用", 卡车: "非汽车/通用", 摩托车: "非汽车/通用",
 };
 
 // ── 公司与主体 ──────────────────────────────────────────────────────────────────────────
 
 /**
  * 公司主题：id → 显示名、卡片上显示的标签（null 表示只用 entity:<id> 归类）、别名。
- * aliases 给结构抽取模型看；otherNames 是公司自己的其他称呼（官方账号名、子品牌），
- * 把事实的主体对到发布方时也认它们。
+ * aliases 给结构抽取模型看，也是把事实主体对到公司的口径；otherNames 是公司自己的其他称呼
+ * （子品牌、官方账号名），把事实的主体对到发布方时也认它们。
  */
 export const ENTITIES: Record<string, { name: string; displayTag: string | null; aliases: string[]; otherNames?: string[] }> = {
-  "world-labs": { name: "World Labs", displayTag: null, aliases: ["World Labs"] },
-  "thinking-machines": { name: "Thinking Machines Lab", displayTag: null, aliases: ["Thinking Machines"] },
-  amd: { name: "AMD", displayTag: null, aliases: ["AMD", "Advanced Micro Devices"] },
-  openai: { name: "OpenAI", displayTag: "OpenAI", aliases: ["OpenAI", "ChatGPT", "Sora", "Codex", "GPT"], otherNames: ["OpenAI Developers"] },
-  anthropic: { name: "Anthropic", displayTag: "Anthropic", aliases: ["Anthropic", "Claude"], otherNames: ["Claude Code"] },
-  google: { name: "Google", displayTag: "Google", aliases: ["Google", "DeepMind", "Gemini", "谷歌"], otherNames: ["Google DeepMind", "Google Research", "Google AI", "Google Labs", "Google Cloud"] },
-  deepseek: { name: "DeepSeek", displayTag: "DeepSeek", aliases: ["DeepSeek", "深度求索"] },
-  qwen: { name: "千问 Qwen", displayTag: null, aliases: ["Qwen", "通义", "阿里"], otherNames: ["通义千问", "千问", "千问APP", "Qwen Team", "通义实验室", "阿里巴巴", "Alibaba", "阿里云", "Alibaba Cloud"] },
-  kimi: { name: "Kimi / 月之暗面", displayTag: null, aliases: ["Kimi", "月之暗面", "Moonshot"], otherNames: ["Moonshot AI"] },
-  minimax: { name: "MiniMax", displayTag: null, aliases: ["MiniMax", "海螺"], otherNames: ["稀宇科技"] },
-  zhipu: { name: "智谱 GLM", displayTag: null, aliases: ["智谱", "GLM", "Z.ai"], otherNames: ["智谱AI", "Zhipu", "Zhipu AI"] },
-  xai: { name: "xAI", displayTag: "xAI", aliases: ["xAI", "Grok"], otherNames: ["SpaceXAI"] },
-  meta: { name: "Meta", displayTag: "Meta", aliases: ["Meta", "Llama"], otherNames: ["Meta AI", "AI at Meta"] },
-  microsoft: { name: "Microsoft", displayTag: "Microsoft", aliases: ["Microsoft", "微软", "Copilot"], otherNames: ["Microsoft Research", "Microsoft AI"] },
-  nvidia: { name: "NVIDIA", displayTag: null, aliases: ["NVIDIA", "英伟达"] },
-  "hugging-face": { name: "Hugging Face", displayTag: "Hugging Face", aliases: ["Hugging Face"], otherNames: ["HuggingFace"] },
-  cursor: { name: "Cursor", displayTag: null, aliases: ["Cursor", "Anysphere"] },
-  openrouter: { name: "OpenRouter", displayTag: null, aliases: ["OpenRouter"] },
+  byd: { name: "比亚迪", displayTag: "比亚迪", aliases: ["比亚迪", "BYD"], otherNames: ["比亚迪汽车", "腾势", "Denza", "方程豹", "仰望", "Yangwang", "王朝", "海洋"] },
+  tesla: { name: "特斯拉", displayTag: "特斯拉", aliases: ["特斯拉", "Tesla", "Model 3", "Model Y", "Model S", "Model X", "Cybertruck"], otherNames: ["特斯拉中国", "Tesla China", "Tesla Energy"] },
+  xiaomi: { name: "小米汽车", displayTag: "小米汽车", aliases: ["小米汽车", "Xiaomi Auto", "SU7", "YU7"], otherNames: ["小米集团", "Xiaomi", "小米"] },
+  huawei: { name: "华为", displayTag: "华为", aliases: ["华为", "Huawei", "鸿蒙智行", "HIMA"], otherNames: ["问界", "AITO", "智界", "Luxeed", "享界", "尊界", "尚界", "乾崑", "ADS", "华为车 BU"] },
+  nio: { name: "蔚来", displayTag: "蔚来", aliases: ["蔚来", "NIO"], otherNames: ["乐道", "ONVO", "萤火虫", "Firefly", "蔚来能源", "NIO Power"] },
+  xpeng: { name: "小鹏", displayTag: "小鹏", aliases: ["小鹏", "小鹏汽车", "XPeng"], otherNames: ["小鹏汇天", "MONA", "小鹏汽车科技"] },
+  "li-auto": { name: "理想", displayTag: "理想", aliases: ["理想", "理想汽车", "Li Auto"], otherNames: ["理想 ONE", "MEGA"] },
+  leapmotor: { name: "零跑", displayTag: "零跑", aliases: ["零跑", "零跑汽车", "Leapmotor"], otherNames: ["零跑国际"] },
+  geely: { name: "吉利", displayTag: "吉利", aliases: ["吉利", "Geely"], otherNames: ["吉利汽车", "极氪", "Zeekr", "领克", "Lynk & Co", "银河", "Galaxy", "沃尔沃", "Volvo", "极星", "Polestar"] },
+  changan: { name: "长安", displayTag: "长安", aliases: ["长安", "长安汽车", "Changan"], otherNames: ["深蓝", "Deepal", "阿维塔", "Avatr", "启源", "NEVO"] },
+  chery: { name: "奇瑞", displayTag: "奇瑞", aliases: ["奇瑞", "Chery"], otherNames: ["奇瑞汽车", "星途", "Exeed", "iCAR", "捷途", "Jetour", "风云"] },
+  "great-wall": { name: "长城", displayTag: "长城", aliases: ["长城", "长城汽车", "Great Wall", "GWM"], otherNames: ["哈弗", "Haval", "魏牌", "WEY", "坦克", "Tank", "欧拉", "ORA"] },
+  saic: { name: "上汽", displayTag: null, aliases: ["上汽", "上汽集团", "SAIC"], otherNames: ["荣威", "Roewe", "名爵", "MG", "智己", "IM Motors", "飞凡", "Rising", "五菱", "Wuling", "宝骏"] },
+  gac: { name: "广汽", displayTag: null, aliases: ["广汽", "广汽集团", "GAC"], otherNames: ["埃安", "AION", "昊铂", "Hyptec", "传祺", "Trumpchi"] },
+  dongfeng: { name: "东风", displayTag: null, aliases: ["东风", "东风汽车", "Dongfeng"], otherNames: ["岚图", "Voyah", "奕派", "eπ", "纳米", "猛士", "M-Hero"] },
+  toyota: { name: "丰田", displayTag: "丰田", aliases: ["丰田", "Toyota"], otherNames: ["丰田中国", "一汽丰田", "广汽丰田", "雷克萨斯", "Lexus", "bZ"] },
+  volkswagen: { name: "大众", displayTag: "大众", aliases: ["大众", "大众汽车", "Volkswagen", "VW"], otherNames: ["一汽-大众", "上汽大众", "一汽大众", "ID.", "CARIAD"] },
+  bmw: { name: "宝马", displayTag: "宝马", aliases: ["宝马", "BMW"], otherNames: ["华晨宝马", "BMW i", "MINI", "Neue Klasse"] },
+  "mercedes-benz": { name: "奔驰", displayTag: null, aliases: ["奔驰", "梅赛德斯-奔驰", "Mercedes-Benz", "Mercedes"], otherNames: ["北京奔驰", "AMG", "迈巴赫", "Maybach"] },
+  hyundai: { name: "现代", displayTag: null, aliases: ["现代汽车", "Hyundai"], otherNames: ["北京现代", "起亚", "Kia", "捷尼赛思", "Genesis"] },
 };
 
 /**
  * 身份词典：摘要和标题里出现的公司，必须在原文里也出现过，否则退回原标题、丢掉摘要（防止模型张冠李戴）。
+ * 中文品牌名很多是日常用词（理想、大众、现代、长安、长城、坦克），正则要带汽车语境，不能只写品牌名。
  * 行业没有这个问题时可以留空数组。
  */
 export const IDENTITY_LEXICON: ReadonlyArray<{ id: string; name: string; patterns: RegExp[] }> = [
-  { id: "openai", name: "OpenAI", patterns: [/openai|chatgpt|\bgpt-?[o\d]|\bsora\b|\bcodex\b/i] },
-  { id: "anthropic", name: "Anthropic", patterns: [/anthropic|\bclaude\b/i, /\b(?:opus|sonnet|haiku)\s*\d+(?:[.\-]\d+)*\b/i, /\bfable\s*\d+(?:[.\-]\d+)*\b|\bmythos\b/i] },
-  { id: "google", name: "Google / Gemini", patterns: [/google|deepmind|\bgemini\b|notebooklm|\bveo\s?\d|\bAlphaFold\b|\bAMIE\b/i] },
-  { id: "deepseek", name: "DeepSeek", patterns: [/deepseek|深度求索/i] },
-  { id: "xai", name: "xAI / Grok", patterns: [/\bxai\b|\bgrok\b/i] },
-  { id: "meta", name: "Meta / Llama", patterns: [/\bMeta\b/, /\bmeta\s?ai\b|\bllama\b/i] },
-  { id: "microsoft", name: "Microsoft / Copilot", patterns: [/microsoft|copilot|微软/i] },
-  { id: "nvidia", name: "NVIDIA", patterns: [/nvidia|英伟达|\bnemotron\b|\bnemo\b|\bblackwell\b|\brubin(?:\s+ultra)?\b|\bcuda\b/i] },
-  { id: "qwen", name: "千问 Qwen", patterns: [/\bqwen|通义|千问/i] },
-  { id: "hugging-face", name: "Hugging Face", patterns: [/hugging\s?face/i] },
-  { id: "cursor", name: "Cursor", patterns: [/\bCursor\b/] },
-  { id: "kimi", name: "Kimi / 月之暗面", patterns: [/\bkimi\b|月之暗面|\bmoonshot\s?ai\b/i] },
-  { id: "openrouter", name: "OpenRouter", patterns: [/openrouter/i] },
-  { id: "minimax", name: "MiniMax", patterns: [/minimax/i] },
-  { id: "zhipu", name: "智谱 GLM", patterns: [/智谱|\bglm-?[4-9]/i] },
-  { id: "hunyuan", name: "腾讯混元", patterns: [/混元|hunyuan/i] },
-  { id: "doubao", name: "字节豆包", patterns: [/豆包|doubao|字节跳动|bytedance/i] },
-  { id: "mistral", name: "Mistral", patterns: [/mistral/i] },
-  { id: "perplexity", name: "Perplexity", patterns: [/\bPerplexity\b/] },
-  { id: "runway", name: "Runway", patterns: [/\brunway\b/i] },
-  { id: "suno", name: "Suno", patterns: [/\bsuno\b/i] },
-  { id: "midjourney", name: "Midjourney", patterns: [/midjourney/i] },
-  { id: "stability-ai", name: "Stability AI", patterns: [/stability\s?ai/i] },
-  { id: "elevenlabs", name: "ElevenLabs", patterns: [/eleven\s?labs/i] },
-  { id: "vllm", name: "vLLM", patterns: [/\bvllm\b/i] },
-  { id: "ollama", name: "Ollama", patterns: [/\bollama\b/i] },
-  { id: "windsurf", name: "Windsurf", patterns: [/windsurf/i] },
-  { id: "devin", name: "Devin", patterns: [/\bdevin\b/i] },
-  { id: "manus", name: "Manus", patterns: [/\bmanus\b/i] },
-  { id: "apple", name: "Apple AI", patterns: [/\bapple\s?(intelligence|silicon|ai)\b|苹果(智能|\s?AI)/i] },
-  { id: "amazon", name: "Amazon / AWS", patterns: [/amazon|\baws\b|亚马逊/i] },
-  { id: "baidu", name: "百度文心", patterns: [/百度|baidu|文心|\bernie\s?bot\b/i] },
+  { id: "byd", name: "比亚迪", patterns: [/比亚迪|\bBYD\b|腾势|\bDenza\b|方程豹|仰望/i] },
+  { id: "tesla", name: "特斯拉", patterns: [/特斯拉|\bTesla\b|\bModel [3YSX]\b|\bCybertruck\b/i] },
+  { id: "xiaomi", name: "小米汽车", patterns: [/小米汽车|小米\s?(?:SU7|YU7)|\bSU7\b|\bYU7\b|Xiaomi Auto/i] },
+  { id: "huawei", name: "华为", patterns: [/鸿蒙智行|\bHIMA\b|问界|\bAITO\b|智界|享界|尊界|尚界|\bADS\s?[0-9]/i] },
+  { id: "nio", name: "蔚来", patterns: [/\bNIO\b|蔚来|乐道|\bONVO\b|萤火虫|\bFirefly\b/i] },
+  { id: "xpeng", name: "小鹏", patterns: [/小鹏汽车|\bXPeng\b|\bMONA\b|小鹏(?:P7|G6|G9|X9|汇天)/i] },
+  { id: "li-auto", name: "理想", patterns: [/理想汽车|\bLi ?Auto\b|理想\s?(?:L[6-9]|MEGA|i[68]|ONE)/i] },
+  { id: "leapmotor", name: "零跑", patterns: [/零跑|\bLeapmotor\b/i] },
+  { id: "geely", name: "吉利", patterns: [/吉利汽车|吉利控股|\bGeely\b|极氪|\bZeekr\b|领克|\bLynk/i] },
+  { id: "changan", name: "长安", patterns: [/长安汽车|\bChangan\b|深蓝|\bDeepal\b|阿维塔|\bAvatr\b/i] },
+  { id: "chery", name: "奇瑞", patterns: [/奇瑞|\bChery\b|星途|\bExeed\b|\biCAR\b/i] },
+  { id: "great-wall", name: "长城", patterns: [/长城汽车|\bGWM\b|哈弗|\bHaval\b|魏牌|\bWEY\b|坦克\s?[3-8]00|欧拉|\bORA\b/i] },
+  { id: "saic", name: "上汽", patterns: [/上汽|荣威|\bRoewe\b|名爵|\bMG\b|智己|五菱|\bWuling\b|宝骏/i] },
+  { id: "gac", name: "广汽", patterns: [/广汽|埃安|\bAION\b|昊铂|\bHyptec\b|传祺|\bTrumpchi\b/i] },
+  { id: "dongfeng", name: "东风", patterns: [/东风汽车|岚图|\bVoyah\b|奕派|\beπ\b/i] },
+  { id: "toyota", name: "丰田", patterns: [/丰田|\bToyota\b|雷克萨斯|\bLexus\b/i] },
+  { id: "volkswagen", name: "大众", patterns: [/大众汽车|一汽[-－]?大众|上汽大众|\bVolkswagen\b|\bVW\b|\bCARIAD\b/i] },
+  { id: "bmw", name: "宝马", patterns: [/宝马|\bBMW\b|\bMINI\b|华晨宝马/i] },
+  { id: "mercedes-benz", name: "奔驰", patterns: [/奔驰|梅赛德斯|Mercedes(?:-Benz)?|\bAMG\b|迈巴赫|Maybach/i] },
+  { id: "hyundai", name: "现代", patterns: [/现代汽车|北京现代|\bHyundai\b|起亚|\bKia\b|捷尼赛思|\bGenesis\b/i] },
+  { id: "stellantis", name: "Stellantis", patterns: [/stellantis|\bPeugeot\b|标致|雪铁龙|Citro[eë]n|菲亚特|\bFiat\b|\bJeep\b|欧宝|\bOpel\b/i] },
+  { id: "ford", name: "福特", patterns: [/\bFord\b|福特|林肯|\bLincoln\b/i] },
+  { id: "gm", name: "通用汽车", patterns: [/通用汽车|\bGeneral Motors\b|\bCadillac\b|凯迪拉克|\bBuick\b|别克|雪佛兰|Chevrolet/i] },
+  { id: "nissan", name: "日产", patterns: [/日产|\bNissan\b|英菲尼迪|\bInfiniti\b/i] },
+  { id: "honda", name: "本田", patterns: [/本田|\bHonda\b|讴歌|\bAcura\b/i] },
+  { id: "nio-firefly", name: "萤火虫", patterns: [/萤火虫|\bFirefly\b/i] },
+  { id: "momenta", name: "Momenta", patterns: [/momenta/i] },
+  { id: "horizon-robotics", name: "地平线", patterns: [/地平线机器人|\bHorizon Robotics\b|征程\s?[0-9]/i] },
+  { id: "hesai", name: "禾赛", patterns: [/禾赛|\bHesai\b/i] },
+  { id: "catl", name: "宁德时代", patterns: [/宁德时代|\bCATL\b|麒麟电池|神行电池/i] },
+  { id: "byd-fudi", name: "弗迪电池", patterns: [/弗迪电池|弗迪动力|刀片电池/i] },
+  { id: "cpca", name: "乘联会", patterns: [/乘[用联]联会|乘联分会|\bCPCA\b/i] },
+  { id: "caam", name: "中汽协", patterns: [/中汽协|中国汽车工业协会|\bCAAM\b/i] },
+  { id: "miit", name: "工信部", patterns: [/工信部|工业和信息化部|\bMIIT\b/i] },
 ];
 
-/** 这些域名上的文章，发布方就是对应的公司（托管平台如 GitHub、arXiv 不算）。 */
+/** 这些域名上的文章，发布方就是对应的公司（汽车之家、懂车帝这类媒体平台不算）。 */
 export const PUBLISHER_DOMAINS: ReadonlyArray<{ entityId: string; domains: readonly string[] }> = [
-  { entityId: "openai", domains: ["openai.com"] },
-  { entityId: "anthropic", domains: ["anthropic.com", "claude.com"] },
-  { entityId: "google", domains: ["deepmind.google", "ai.google", "blog.google"] },
-  { entityId: "deepseek", domains: ["deepseek.com"] },
-  { entityId: "xai", domains: ["x.ai"] },
-  { entityId: "meta", domains: ["ai.meta.com"] },
-  { entityId: "microsoft", domains: ["microsoft.com"] },
-  { entityId: "nvidia", domains: ["nvidia.com"] },
-  { entityId: "qwen", domains: ["qwen.ai"] },
-  { entityId: "cursor", domains: ["cursor.com"] },
-  { entityId: "openrouter", domains: ["openrouter.ai"] },
+  { entityId: "byd", domains: ["byd.com", "bydauto.com.cn"] },
+  { entityId: "tesla", domains: ["tesla.com", "tesla.cn"] },
+  { entityId: "xiaomi", domains: ["xiaomiev.com", "mi.com"] },
+  { entityId: "huawei", domains: ["huawei.com"] },
+  { entityId: "nio", domains: ["nio.com", "nio.cn"] },
+  { entityId: "xpeng", domains: ["xiaopeng.com", "xpeng.com"] },
+  { entityId: "li-auto", domains: ["lixiang.com"] },
+  { entityId: "leapmotor", domains: ["leapmotor.com"] },
+  { entityId: "geely", domains: ["geely.com", "zgh.com", "zeekrgroup.com"] },
+  { entityId: "changan", domains: ["changan.com.cn"] },
+  { entityId: "chery", domains: ["chery.cn"] },
+  { entityId: "great-wall", domains: ["gwm.com.cn"] },
+  { entityId: "saic", domains: ["saicmotor.com"] },
+  { entityId: "gac", domains: ["gac.com.cn"] },
+  { entityId: "dongfeng", domains: ["dfmc.com.cn"] },
+  { entityId: "toyota", domains: ["toyota.com", "toyota.com.cn"] },
+  { entityId: "volkswagen", domains: ["volkswagen-newsroom.com", "vw.com.cn"] },
+  { entityId: "bmw", domains: ["bmwgroup.com", "press.bmwgroup.com", "bmw.com.cn"] },
+  { entityId: "mercedes-benz", domains: ["mercedes-benz.com", "media.mercedes-benz.com"] },
+  { entityId: "hyundai", domains: ["hyundai.com", "hyundai.com.cn"] },
 ];
 
-/** 原文里的这些写法也算提到了对应公司。 */
+/** 原文里的这些写法也算提到了对应公司：子品牌名本身不含母品牌名，需要单独列出来。 */
 export const IDENTITY_CONTEXT_ALIASES: ReadonlyArray<{ entityId: string; pattern: RegExp }> = [
-  { entityId: "meta", pattern: /@AIatMeta\b/i },
-  { entityId: "zhipu", pattern: /\bZhipu(?:\s+AI\b|['’]s\b)/i },
+  { entityId: "byd", pattern: /腾势|\bDenza\b|方程豹|仰望/i },
+  { entityId: "huawei", pattern: /鸿蒙智行|\bHIMA\b|问界|\bAITO\b|智界|享界|尊界|尚界|乾崑/i },
+  { entityId: "geely", pattern: /极氪|\bZeekr\b|领克|\bLynk\b/i },
+  { entityId: "nio", pattern: /乐道|\bONVO\b|萤火虫|\bFirefly\b/i },
+  { entityId: "changan", pattern: /深蓝|\bDeepal\b|阿维塔|\bAvatr\b|启源|\bNEVO\b/i },
+  { entityId: "chery", pattern: /星途|\bExeed\b|\biCAR\b|捷途|\bJetour\b/i },
+  { entityId: "great-wall", pattern: /哈弗|\bHaval\b|魏牌|\bWEY\b|坦克|\bTank\b|欧拉|\bORA\b/i },
+  { entityId: "saic", pattern: /荣威|\bRoewe\b|名爵|\bMG\b|智己|五菱|\bWuling\b/i },
+  { entityId: "gac", pattern: /埃安|\bAION\b|昊铂|\bHyptec\b|传祺|\bTrumpchi\b/i },
+  { entityId: "dongfeng", pattern: /岚图|\bVoyah\b|奕派|\beπ\b|猛士|\bM-Hero\b/i },
 ];

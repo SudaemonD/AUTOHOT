@@ -20,8 +20,8 @@ const provider = await stub(async (_hit, request) => {
   }
   const content = step === "prefilter" ? { label: "PASS", reason: "local fixture" }
     : step === "score" ? { attentionScore: SELECTING_SCORE }
-    : step === "structure" ? { category: "ai-models", tags: [], subjects: [], scope: "single", fact: null }
-    : { itemType: "model_release", authorRole: "principal", tags: ["模型发布"], editorialJudgment: "模型能力提升", titleZh: "实验室发布新模型", summaryZh: "实验室发布新模型，并公布了评测结果与价格。" };
+    : step === "structure" ? { category: "new-cars", tags: [], subjects: [], scope: "single", fact: null }
+    : { itemType: "new_car_launch", authorRole: "principal", tags: ["新车发布"], editorialJudgment: "新车产品力提升", titleZh: "某车企发布新车", summaryZh: "某车企发布新车，并公布了价格与配置。" };
   return { choices: [{ message: { content: JSON.stringify(content) } }] };
 });
 pointModels(provider.url);
@@ -31,8 +31,8 @@ before(async () => {
 });
 after(async () => { await stopBoss(); await provider.close(); await closeDb(); });
 
-const material = (name: string) => ({ sourceId, url: `https://example.org/${sourceId}/${name}`, title: `A lab releases a model ${name}`,
-  bodyText: `A lab released a model ${name}. ` + "The release includes benchmark results and pricing details. ".repeat(12),
+const material = (name: string) => ({ sourceId, url: `https://example.org/${sourceId}/${name}`, title: `A new car launches ${name}`,
+  bodyText: `A car maker launched a new car ${name}. ` + "The launch includes specs and pricing details. ".repeat(12),
   bodyStatus: "ok" as const, via: "fetch" as const, publishedAt: new Date() });
 
 test("a late successful analysis preserves newer input awaiting processing", async () => {

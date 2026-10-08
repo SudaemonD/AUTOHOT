@@ -33,8 +33,8 @@ const provider = await stub(async (_hit, request) => {
   }
   const content = step === "prefilter" ? { label: original ? "BLOCK" : "PASS", reason: "local fixture" }
     : step === "score" ? { attentionScore: SELECTING_SCORE }
-    : step === "structure" ? { category: "ai-models", tags: [], subjects: [], fact: null }
-    : { itemType: "model_release", authorRole: "principal", tags: ["模型发布"], editorialJudgment: "模型能力提升", titleZh: `新判断 ${T}`, summaryZh: "模型发布并提供评测和价格。" };
+    : step === "structure" ? { category: "new-cars", tags: [], subjects: [], fact: null }
+    : { itemType: "new_car_launch", authorRole: "principal", tags: ["新车发布"], editorialJudgment: "新车产品力提升", titleZh: `新判断 ${T}`, summaryZh: "新车上市并公布价格与配置。" };
   return { choices: [{ message: { content: JSON.stringify(content) } }] };
 });
 pointModels(provider.url);
@@ -49,8 +49,8 @@ afterEach(async () => {
 });
 
 async function article(name: string) {
-  return (await upsertMaterial({ sourceId: SOURCE, url: `https://example.org/${T}/${name}`, title: `AI model ${T} ${name}`,
-    bodyText: `AI lab release ${T} ${name}. ` + "The new model includes benchmark and price details. ".repeat(12),
+  return (await upsertMaterial({ sourceId: SOURCE, url: `https://example.org/${T}/${name}`, title: `New car ${T} ${name}`,
+    bodyText: `Car launch ${T} ${name}. ` + "The new car includes spec and price details. ".repeat(12),
     bodyStatus: "ok", via: "fetch", backfill: "test fixture", publishedAt: new Date() })).articleId;
 }
 

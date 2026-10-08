@@ -72,7 +72,7 @@ test("shards keep to the query length and account limits, per participation mode
     id: `s${String(i).padStart(2, "0")}`, kind: "x_search" as const, participation_mode: (i % 2 ? "hot_signal" : "editorial") as "hot_signal" | "editorial",
     config: { query: `from:handle_${String(i).padStart(8, "0")} -filter:replies`, ...(i % 3 === 0 ? { publisherRole: "organization" } : {}) }, cursor: { lastTweetId: "1" },
   }));
-  const own = { id: "s99", kind: "x_search" as const, participation_mode: "editorial" as const, config: { query: "from:elonmusk -filter:replies (Grok OR xAI)" }, cursor: { lastTweetId: "1" } };
+  const own = { id: "s99", kind: "x_search" as const, participation_mode: "editorial" as const, config: { query: "from:elonmusk -filter:replies (特斯拉 OR Model Y)" }, cursor: { lastTweetId: "1" } };
   const fresh = { id: "s98", kind: "x_search" as const, participation_mode: "editorial" as const, config: { query: "from:newaccount -filter:replies" }, cursor: null };
   const shards = planXShards([...long, own, fresh]);
   assert.deepEqual(shards.flatMap((s) => s.sourceIds).sort(), long.map((s) => s.id).sort(), "a query of its own and a first fetch stay out");
@@ -170,7 +170,7 @@ test("verified publishers include self-thread announcements in both single and s
   await fetchXSearch(source as Parameters<typeof fetchXSearch>[0]);
   assert.ok(queries[singleBefore]!.startsWith(`from:${HANDLES[0]} (-filter:replies OR filter:self_threads)`));
   assert.equal(selfThreadHandle({ config: { query: "from:official -filter:replies", publisherRole: "person" } }), "official");
-  assert.equal(selfThreadHandle({ config: { query: "from:official -filter:replies (AI OR news)", publisherRole: "organization" } }), null, "custom query semantics stay explicit");
+  assert.equal(selfThreadHandle({ config: { query: "from:official -filter:replies (car OR news)", publisherRole: "organization" } }), null, "custom query semantics stay explicit");
   assert.equal(selfThreadHandle({ config: { query: "from:media -filter:replies" } }), null);
 });
 

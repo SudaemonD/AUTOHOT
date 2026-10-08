@@ -19,9 +19,9 @@ const pages: Record<string, () => string> = {
   // The Verge's feed: a teaser that ends in "Read the full story", next to a post whose feed carries it whole.
   "/verge.xml": () =>
     `<?xml version="1.0"?><feed xmlns="http://www.w3.org/2005/Atom">` +
-    `<entry><title>AMD is acquiring World Labs</title><link rel="alternate" href="https://example.org/amd-world-labs"/><published>2026-09-28T17:31:35-04:00</published>` +
-    `<summary type="html">AMD announced today that it's acquiring World Labs.</summary>` +
-    `<content type="html"><![CDATA[<p>${"AMD announced today that it is acquiring World Labs in an all-stock deal. ".repeat(8)}</p><p>Read the full story at The Verge.</p>]]></content></entry>` +
+    `<entry><title>Hyundai is acquiring GAC</title><link rel="alternate" href="https://example.org/hyundai-gac"/><published>2026-09-28T17:31:35-04:00</published>` +
+    `<summary type="html">Hyundai announced today that it's acquiring GAC.</summary>` +
+    `<content type="html"><![CDATA[<p>${"Hyundai announced today that it is acquiring GAC in an all-stock deal. ".repeat(8)}</p><p>Read the full story at The Verge.</p>]]></content></entry>` +
     `<entry><title>A whole post</title><link rel="alternate" href="https://example.org/whole"/><published>2026-09-28T10:00:00Z</published>` +
     `<content type="html"><![CDATA[<p>${"The feed carries this post whole, paragraph after paragraph. ".repeat(30)}</p>]]></content></entry></feed>`,
   // A podcast whose feed summary is the whole episode note, in RSS and in Atom.
@@ -36,10 +36,10 @@ const pages: Record<string, () => string> = {
   "/zoneless-post": () => `<html><head><meta property="article:published_time" content="2026-09-30 17:43:58"></head><body><p>Post</p></body></html>`,
   // A list API that gives calendar days as yyyymmdd.
   "/days.json": () => JSON.stringify({ data: { list: [{ seq: 695, ttl: "MCFlow", day: "20260922" }, { seq: 1, ttl: "Bad day", day: "20260230" }] } }),
-  // Google Developers Blog: no date in the feed or in meta tags, only in JSON-LD.
+  // A developer blog: no date in the feed or in meta tags, only in JSON-LD.
   "/ld-post": () =>
     `<html><head><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","name":"Blog"},` +
-    `{"@type":"BlogPosting","headline":"Turn REST APIs into MCP tools","datePublished":"2026-09-24"}]}</script></head><body><p>Post</p></body></html>`,
+    `{"@type":"BlogPosting","headline":"Turn fleet data into dashboards","datePublished":"2026-09-24"}]}</script></head><body><p>Post</p></body></html>`,
 };
 const server = http.createServer((req, res) => {
   const path = req.url ?? "";
@@ -55,28 +55,28 @@ after(() => new Promise<void>((resolve) => server.close(() => resolve())));
 test("Jina card links become posts with their own titles", () => {
   const md = [
     "[Skip to main content](http://example.org/blog/#main)",
-    "[![Image 1: hero](https://cdn.example.org/a.jpg) ##### 智元发布GE-Act 2.0 新闻资讯 | 2026-09-20](https://example.org/blog/220.html \"智元发布GE-Act 2.0\")",
-    "[![Image 2](https://cdn.example.org/b.png) ##### 小米18 Pro Max 测评 尾巴视频](http://example.org/blog/784.html)",
+    "[![Image 1: hero](https://cdn.example.org/a.jpg) ##### 小鹏发布P7 Ultra 新闻资讯 | 2026-09-20](https://example.org/blog/220.html \"小鹏发布P7 Ultra\")",
+    "[![Image 2](https://cdn.example.org/b.png) ##### 小米 SU7 测评 尾巴视频](http://example.org/blog/784.html)",
     "[![Image 3](https://cdn.example.org/c.png)](https://example.org/blog/carousel.html)",
     "# [Introducing v6](http://example.org/blog/introducing-v6)",
     "[2026](http://example.org/blog/2026) [Algorithms & Theory](http://example.org/blog/label/algorithms) [Next page](http://example.org/blog/page/2)",
   ].join("\n\n");
   const out = fromMarkdown(md, "https://example.org", source({ url: "https://r.jina.ai/http://example.org/blog/", allowUrlPrefixes: ["https://example.org/blog/"] }));
   assert.deepEqual(out, [
-    { url: "https://example.org/blog/220.html", title: "智元发布GE-Act 2.0" },
-    { url: "https://example.org/blog/784.html", title: "小米18 Pro Max 测评 尾巴视频" },
+    { url: "https://example.org/blog/220.html", title: "小鹏发布P7 Ultra" },
+    { url: "https://example.org/blog/784.html", title: "小米 SU7 测评 尾巴视频" },
     { url: "https://example.org/blog/introducing-v6", title: "Introducing v6" },
   ]);
 });
 
 test("anchors into the listing page itself are navigation, not posts", () => {
-  // mimo.xiaomi.com links its own sections (#paper, #blog, #join): all one address once the fragment goes.
+  // car.xiaomi.com links its own sections (#paper, #blog, #join): all one address once the fragment goes.
   const html = [
     '<a href="/#paper">Paper</a>', '<a href="/#blog">Blog</a>', '<a href="https://example.org/#join">Join Us</a>',
-    '<a href="/">Home</a>', '<a href="/blog/mimo-v2-6-tool-call">Diagnosing Tool-Call Repetition</a>',
+    '<a href="/">Home</a>', '<a href="/blog/su7-ota">Diagnosing OTA Repetition</a>',
   ].join("");
   const out = fromHtml(html, "https://example.org/", source({ url: "https://example.org/" }));
-  assert.deepEqual(out.map((c) => c.url), ["https://example.org/blog/mimo-v2-6-tool-call"]);
+  assert.deepEqual(out.map((c) => c.url), ["https://example.org/blog/su7-ota"]);
 });
 
 test("posts addressed by a query on the listing's path are posts, its pages and filters are not", () => {
@@ -91,19 +91,19 @@ test("posts addressed by a query on the listing's path are posts, its pages and 
   assert.deepEqual(fromHtml(html, "https://example.org/", source({ url: "https://example.org/" })).map((c) => c.url), posts);
   assert.deepEqual(fromMarkdown(md, "https://example.org/", source({ url: "https://r.jina.ai/https://example.org/" })).map((c) => c.url), posts);
   // The listing's own query in another order, with tracking and a page number, is still the listing.
-  const filtered = source({ url: "https://example.org/news?lang=en&kind=ai" });
-  const out = fromHtml('<a href="/news?kind=ai&lang=en&utm_medium=x&page=2">Next page of news</a><a href="/news?kind=ai&lang=en&id=7">A news post</a>', "https://example.org/", filtered);
-  assert.deepEqual(out.map((c) => c.url), ["https://example.org/news?kind=ai&lang=en&id=7"]);
+  const filtered = source({ url: "https://example.org/news?lang=en&kind=car" });
+  const out = fromHtml('<a href="/news?kind=car&lang=en&utm_medium=x&page=2">Next page of news</a><a href="/news?kind=car&lang=en&id=7">A news post</a>', "https://example.org/", filtered);
+  assert.deepEqual(out.map((c) => c.url), ["https://example.org/news?kind=car&lang=en&id=7"]);
   // Hosts still compare as written: www is another host.
   assert.equal(fromHtml('<a href="https://www.example.org/">Home on www</a>', "https://example.org/", source({ url: "https://example.org/" })).length, 1);
 });
 
 test("promotions a feed rotates inside its posts are left out of the body", () => {
-  // Microsoft Research's feed puts a different podcast or product promotion into each post on every load.
+  // Toyota Research's feed puts a different podcast or product promotion into each post on every load.
   const promo = (label: string, name: string) =>
     `<div class="border-bottom border-top mt-5 mb-5 msr-promo text-center alignwide" data-bi-aN="promo">` +
     `<p class="msr-promo__label text-uppercase"><span>${label}</span></p><div class="row"><div class="msr-promo__content">` +
-    `<h2 class="h4">${name}</h2><p>Join Microsoft researchers.</p><a href="https://example.org/podcast">Listen now</a></div></div></div>`;
+    `<h2 class="h4">${name}</h2><p>Join Toyota researchers.</p><a href="https://example.org/podcast">Listen now</a></div></div></div>`;
   const post = (p: string) => `<p>Skala is now available in the tools scientists use.</p>${p}<p>From community release to native integration.</p>`;
   const a = sanitizeBody(post(promo("PODCAST SERIES", "Ideas")), "https://example.org/post");
   const b = sanitizeBody(post(promo("", "Foundry Labs")), "https://example.org/post");
@@ -115,18 +115,18 @@ test("promotions a feed rotates inside its posts are left out of the body", () =
 test("a listing that links other articles in its teasers takes only the links that begin a line", () => {
   // Axios Technology through Jina: each headline stands on its own line; its teaser links older stories inline.
   const md = [
-    "### [Amodei critics target Trump with hit piece before White House dinner](https://example.org/2026/09/27/amodei)",
+    "### [Musk critics target Trump with hit piece before White House dinner](https://example.org/2026/09/27/amodei)",
     "[![Image 3: Scoop](https://example.org/a.jpg)](https://example.org/2026/09/27/dinner)",
-    "[Scoop: Anthropic's Dario Amodei to have White House dinner](https://example.org/2026/09/27/dinner)",
+    "[Scoop: Tesla's Elon Musk to have White House dinner](https://example.org/2026/09/27/dinner)",
     "[How Ed Sheeran's U.S. tour went off the rails in 3 weeks](https://example.org/2026/09/25/sheeran)[![Image 12: Ed Sheeran](https://example.org/b.jpg)](https://example.org/2026/09/25/sheeran)",
     "Ed Sheeran's two Gillette Stadium shows were canceled Friday, capping a [chaotic three weeks](https://example.org/2026/09/15/sheeran-loop).",
-    "**Why it matters:** AI is energy-hungry. [Political divides](https://example.org/2026/09/24/climate-politics) can slow progress.",
+    "**Why it matters:** Data centers are energy-hungry. [Political divides](https://example.org/2026/09/24/climate-politics) can slow progress.",
     "[Go deeper (3 min. read)](https://example.org/2026/09/25/sheeran)",
   ].join("\n\n");
   const config = { url: "https://r.jina.ai/https://example.org/technology", allowUrlPrefixes: ["https://example.org/2"], linksStartLine: true };
   assert.deepEqual(fromMarkdown(md, "https://example.org", source(config)).map((c) => c.title), [
-    "Amodei critics target Trump with hit piece before White House dinner",
-    "Scoop: Anthropic's Dario Amodei to have White House dinner",
+    "Musk critics target Trump with hit piece before White House dinner",
+    "Scoop: Tesla's Elon Musk to have White House dinner",
     "How Ed Sheeran's U.S. tour went off the rails in 3 weeks",
   ]);
   assert.equal(fromMarkdown(md, "https://example.org", source({ ...config, linksStartLine: undefined })).length, 5, "without the option prose links count");
@@ -137,7 +137,7 @@ test("feed text that only teases the article is a summary: the page is fetched b
   const [teaser, whole] = read.candidates;
   assert.equal(teaser!.bodyStatus, "pending");
   assert.equal(teaser!.bodyText, null);
-  assert.equal(teaser!.excerpt, "AMD announced today that it's acquiring World Labs.");
+  assert.equal(teaser!.excerpt, "Hyundai announced today that it's acquiring GAC.");
   assert.equal(whole!.bodyStatus, "ok");
   assert.ok(whole!.bodyText!.length > 1200);
   // Discussion sources only need what the feed says.
@@ -159,29 +159,29 @@ test("a source that declares its feed summary the body keeps a short one, in RSS
 });
 
 test("hidden page parts are dropped whole, and a news page's closing blocks are trimmed", () => {
-  // microsoft.ai posts carry <template> blocks of base64 that became 330,000 characters of "body".
+  // car-maker pages carry <template> blocks of base64 that became 330,000 characters of "body".
   const html = sanitizeBody(
-    `<p>MAI-Transcribe-2 is our most capable transcription model.</p><template><div><p>${"QUFB".repeat(500)}</p></div></template>` +
+    `<p>bZ4X is our most capable electric model.</p><template><div><p>${"QUFB".repeat(500)}</p></div></template>` +
       `<svg><text>chart label</text></svg><p>Energy <math><mi>E</mi><annotation encoding="application/x-tex">E=mc^2</annotation></math> matters.</p>`,
     "https://example.org/post",
   );
   assert.ok(!/QUFB|chart label|mc\^2/.test(html), html);
-  assert.ok(html.includes("most capable transcription model") && html.includes("Energy E matters"));
+  assert.ok(html.includes("most capable electric model") && html.includes("Energy E matters"));
   // A linked chart in a paragraph of its own survives, also when a translation is cleaned again.
-  const chart = '<p><a href="https://example.org/chart.png"><img src="https://example.org/chart.png" alt="B200 prices"></a></p>';
-  assert.ok(sanitizeBody(sanitizeBody(`<p>Prices doubled.</p>${chart}<p> </p>`)).includes('alt="B200 prices"'));
+  const chart = '<p><a href="https://example.org/chart.png"><img src="https://example.org/chart.png" alt="SU7 prices"></a></p>';
+  assert.ok(sanitizeBody(sanitizeBody(`<p>Prices doubled.</p>${chart}<p> </p>`)).includes('alt="SU7 prices"'));
   assert.equal(sanitizeBody("<p>Text.</p><p> <br></p><p><a href=\"https://example.org/\"></a></p>"), "<p>Text.</p>");
   // TechCrunch ends every article the same way.
   const article = "<p>MongoDB’s shares dropped by more than 17%.</p><h2>Topics</h2><p>More on the deal.</p><p>Subscribe to our plan to get the API.</p>";
-  assert.equal(trimTrailingChrome(`${article}<p>Topics</p><p>Subscribe for the industry’s biggest tech news</p><h2>Latest in AI</h2>`), article);
+  assert.equal(trimTrailingChrome(`${article}<p>Topics</p><p>Subscribe for the industry’s biggest tech news</p><h2>Latest in Cars</h2>`), article);
   assert.equal(trimTrailingChrome(article), article);
 });
 
 test("noise words match whatever their case", () => {
-  // 笔记本 is noise, but the lower-case exemption agent keeps a post about an Agent product.
-  const source = { config: { ingestNoiseFilter: { dropMarkers: ["笔记本", "iphone"], keepIfMatches: ["agent"] } } } as never;
+  // 笔记本 is noise, but the keep-exemption 智驾 keeps a post about a 智驾 product.
+  const source = { config: { ingestNoiseFilter: { dropMarkers: ["笔记本", "iphone"], keepIfMatches: ["智驾"] } } } as never;
   const c = (title: string, excerpt: string) => ({ url: "https://example.org/a", title, excerpt }) as never;
-  assert.equal(noiseFiltered(c("Manus：正组建团队开发面向国内市场的产品", "与笔记本厂商合作的 Agent 产品"), source), false);
+  assert.equal(noiseFiltered(c("Manus：正组建团队开发面向国内市场的产品", "与笔记本厂商合作的智驾产品"), source), false);
   assert.equal(noiseFiltered(c("新款笔记本开售", "首发价 4999 元"), source), true);
   assert.equal(noiseFiltered(c("iPhone 18 开售", ""), source), true);
 });
