@@ -249,11 +249,11 @@
       "syndicate_fulltext": false
     },
     {
-      "id": "rss-autoevolution",
-      "name": "autoevolution",
+      "id": "rss-automotiveworld",
+      "name": "Automotive World",
       "kind": "rss",
       "config": {
-        "feedUrl": "https://www.autoevolution.com/rss/",
+        "feedUrl": "https://www.automotiveworld.com/feed/",
         "_aihot": {
           "initialBackfillLimit": 8
         }
@@ -261,7 +261,1285 @@
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "媒体"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "rss-electriccarsreport",
+      "name": "Electric Cars Report",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://electriccarsreport.com/feed/",
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "媒体"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "rss-jalopnik",
+      "name": "Jalopnik",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://jalopnik.com/rss",
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "媒体"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "rss-gasgoo",
+      "name": "盖世汽车",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://auto.gasgoo.com/rss/ClassRss.aspx?ClassId=-1",
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "媒体"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "rss-stats-gov",
+      "name": "国家统计局",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://www.stats.gov.cn/sj/zxfb/rss.xml",
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 720,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "rss-bnef",
+      "name": "BloombergNEF",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://about.bnef.com/feed/",
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "媒体"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "rss-siemens-press",
+      "name": "西门子新闻稿",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://press.siemens.com/global/en/rss.xml",
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "rss-dassault-press",
+      "name": "达索系统新闻稿",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://www.3ds.com/contents/feed/content/article_press_release",
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "json-catarc-policy",
+      "name": "中国汽车战略与政策研究中心",
+      "kind": "json_list",
+      "config": {
+        "url": "https://www.catarc.net.cn/web/v1/article/articleTimeList?article_type=1&page=1&limit=10",
+        "itemsPath": "data.list",
+        "titlePaths": [
+          "title"
+        ],
+        "publishedAtPath": "send_time",
+        "publishedAtUnit": "epoch_s",
+        "externalIdPath": "id",
+        "urlTemplate": "https://www.catarc.net.cn/web/#/news-detail?id={raw:id}&type=1",
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 240,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "json-dfmc-news",
+      "name": "东风汽车集团",
+      "kind": "json_list",
+      "config": {
+        "url": "https://www.dfmc.com.cn/news/qiyexinwen.json",
+        "itemsPath": "list",
+        "titlePaths": [
+          "title"
+        ],
+        "summaryPaths": [
+          "summary"
+        ],
+        "urlTemplate": "https://www.dfmc.com.cn{raw:link}",
+        "detail": {
+          "maxFetches": 20,
+          "publishedAtSelector": ".infocontent_title em span",
+          "publishedAtRegex": "发布日期[：:\\s]*(\\d{4}-\\d{2}-\\d{2})"
+        },
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "json-chery-news",
+      "name": "奇瑞汽车",
+      "kind": "json_list",
+      "config": {
+        "url": "https://mobile-consumer-sapp.chery.cn/web/pgc/contents/paging-for-c-code-type?parentCode=2988568845922435072&pageNo=1&pageSize=20",
+        "itemsPath": "data.data",
+        "titlePaths": [
+          "title"
+        ],
+        "publishedAtPath": "publishTime",
+        "externalIdPath": "id",
+        "urlTemplate": "https://www.chery.cn/brandshow/newsdetail?id={raw:id}",
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 720,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "json-cninfo-announcements",
+      "name": "巨潮资讯网（汽车相关）",
+      "kind": "json_list",
+      "config": {
+        "url": "https://www.cninfo.com.cn/new/hisAnnouncement/query?pageNum=1&pageSize=30&column=szse&tabName=fulltext&isHLtitle=false&searchkey=%E6%B1%BD%E8%BD%A6",
+        "method": "POST",
+        "headers": {
+          "Referer": "https://www.cninfo.com.cn/"
+        },
+        "itemsPath": "announcements",
+        "titlePaths": [
+          "announcementTitle"
+        ],
+        "authorPaths": [
+          "secName"
+        ],
+        "publishedAtPath": "announcementTime",
+        "publishedAtUnit": "epoch_ms",
+        "externalIdPath": "announcementId",
+        "urlTemplate": "https://static.cninfo.com.cn/{raw:adjunctUrl}",
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
       "interval_minutes": 180,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "json-sse-bulletins",
+      "name": "上海证券交易所（汽车相关）",
+      "kind": "json_list",
+      "config": {
+        "url": "https://query.sse.com.cn/security/stock/queryCompanyBulletinNew.do?isPagination=true&pageHelp.pageSize=30&TITLE=%E6%B1%BD%E8%BD%A6&START_DATE=2026-10-05&END_DATE=2026-12-30",
+        "headers": {
+          "Referer": "https://www.sse.com.cn/"
+        },
+        "itemsPath": "pageHelp.data",
+        "titlePaths": [
+          "0.TITLE"
+        ],
+        "authorPaths": [
+          "0.SECURITY_NAME"
+        ],
+        "publishedAtPath": "0.SSEDATE",
+        "externalIdPath": "0.ORG_BULLETIN_ID",
+        "urlTemplate": "https://www.sse.com.cn{raw:0.URL}",
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 180,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "json-szse-announcements",
+      "name": "深圳证券交易所",
+      "kind": "json_list",
+      "config": {
+        "url": "https://www.szse.cn/api/disc/announcement/annList?random=0.5",
+        "method": "POST",
+        "headers": {
+          "Referer": "https://www.szse.cn/"
+        },
+        "bodyJson": {
+          "channelCode": [
+            "listedNotice_disc"
+          ],
+          "pageSize": 30,
+          "pageNum": 1
+        },
+        "itemsPath": "data",
+        "titlePaths": [
+          "title"
+        ],
+        "authorPaths": [
+          "secName.0"
+        ],
+        "publishedAtPath": "publishTime",
+        "externalIdPath": "annId",
+        "urlTemplate": "https://disc.szse.cn/download{raw:attachPath}",
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 180,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": false
+    },
+    {
+      "id": "json-ggzy-trades",
+      "name": "全国公共资源交易平台",
+      "kind": "json_list",
+      "config": {
+        "url": "https://www.ggzy.gov.cn/information/pubTradingInfo/getTradList?PAGENUMBER=1&DEAL_TIME=05",
+        "method": "POST",
+        "headers": {
+          "Referer": "https://www.ggzy.gov.cn/"
+        },
+        "itemsPath": "data.records",
+        "titlePaths": [
+          "title"
+        ],
+        "authorPaths": [
+          "provinceText"
+        ],
+        "publishedAtPath": "publishTime",
+        "externalIdPath": "id",
+        "urlTemplate": "https://www.ggzy.gov.cn{raw:url}",
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 240,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": false
+    },
+    {
+      "id": "json-36kr-newsflash",
+      "name": "36氪快讯",
+      "kind": "json_list",
+      "config": {
+        "url": "https://gateway.36kr.com/api/mis/nav/newsflash/flow",
+        "method": "POST",
+        "headers": {
+          "Referer": "https://www.36kr.com/"
+        },
+        "bodyJson": {
+          "partner_id": "wap",
+          "param": {
+            "siteId": 1,
+            "platformId": 2,
+            "pageSize": 20,
+            "pageEvent": 2,
+            "pageCallback": "eyJmaXJzdElkIjpudWxsLCJsYXN0SWQiOm51bGwsImZpcnN0Q3JlYXRlVGltZSI6bnVsbCwibGFzdENyZWF0ZVRpbWUiOm51bGx9"
+          },
+          "timestamp": 1791724800000
+        },
+        "itemsPath": "data.itemList",
+        "titlePaths": [
+          "templateMaterial.widgetTitle"
+        ],
+        "summaryPaths": [
+          "templateMaterial.widgetContent"
+        ],
+        "publishedAtPath": "templateMaterial.publishTime",
+        "publishedAtUnit": "epoch_ms",
+        "externalIdPath": "itemId",
+        "urlTemplate": "https://www.36kr.com/newsflashes/{raw:itemId}",
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "媒体"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-caam",
+      "name": "中国汽车工业协会",
+      "kind": "web_list",
+      "config": {
+        "url": "http://www.caam.org.cn/chn/8/cate_79/list_1.html",
+        "baseUrl": "http://www.caam.org.cn/chn/8/cate_79/",
+        "parseMode": "html",
+        "itemSelector": ".opinion li",
+        "linkSelector": "a",
+        "titleSelector": "span.cont",
+        "publishedAtSelector": "span.time",
+        "publishedAtRegex": "(\\d{4}\\.\\d{1,2}\\.\\d{1,2})",
+        "allowUrlPrefixes": [
+          "http://www.caam.org.cn/chn/8/cate_79/"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-caam-data",
+      "name": "中汽协产销数据",
+      "kind": "web_list",
+      "config": {
+        "url": "http://www.caam.org.cn/chn/4/cate_30/list_1.html",
+        "baseUrl": "http://www.caam.org.cn/chn/4/cate_30/",
+        "parseMode": "html",
+        "itemSelector": ".opinion li",
+        "linkSelector": "a",
+        "titleSelector": "span.cont",
+        "publishedAtSelector": "span.time",
+        "publishedAtRegex": "(\\d{4}\\.\\d{1,2}\\.\\d{1,2})",
+        "allowUrlPrefixes": [
+          "http://www.caam.org.cn/chn/4/cate_30/"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 720,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-cada",
+      "name": "中国汽车流通协会",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.cada.cn/Trends/list_92_1.html",
+        "baseUrl": "https://www.cada.cn",
+        "parseMode": "html",
+        "itemSelector": ".neirong",
+        "linkSelector": "a",
+        "titleSelector": "a",
+        "publishedAtSelector": ".shijian",
+        "allowUrlPrefixes": [
+          "https://www.cada.cn/Trends/info_"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 240,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-sae-china",
+      "name": "中国汽车工程学会",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.sae-china.org/news/",
+        "baseUrl": "https://www.sae-china.org",
+        "parseMode": "html",
+        "itemSelector": "ul.data > li",
+        "linkSelector": "a",
+        "titleSelector": "h3.tit",
+        "publishedAtSelector": "time.time",
+        "allowUrlPrefixes": [
+          "https://www.sae-china.org/news/"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 240,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-catarc",
+      "name": "中国汽车技术研究中心",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.catarc.ac.cn/",
+        "baseUrl": "https://www.catarc.ac.cn",
+        "parseMode": "html",
+        "itemSelector": "ul.news-content li",
+        "linkSelector": "a",
+        "titleSelector": "span.title",
+        "publishedAtSelector": "span.time",
+        "allowUrlPrefixes": [
+          "https://www.catarc.ac.cn/detail/"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 240,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-inabr",
+      "name": "汽车商业评论",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.inabr.com/",
+        "baseUrl": "https://www.inabr.com",
+        "parseMode": "html",
+        "itemSelector": "li.articleItem",
+        "linkSelector": "a",
+        "titleSelector": "h5",
+        "publishedAtRegex": "(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2})",
+        "allowUrlPrefixes": [
+          "https://www.inabr.com/news/"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "媒体"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-miit",
+      "name": "工业和信息化部",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.miit.gov.cn/",
+        "baseUrl": "https://www.miit.gov.cn/",
+        "parseMode": "html",
+        "itemSelector": ".tabbox-bd-con li",
+        "linkSelector": "a",
+        "publishedAtSelector": "span",
+        "publishedAtRegex": "(\\d{4}-\\d{2}-\\d{2})",
+        "allowUrlPrefixes": [
+          "https://www.miit.gov.cn/xwfb/",
+          "https://www.miit.gov.cn/zwgk/",
+          "https://www.miit.gov.cn/gxsj/",
+          "https://www.miit.gov.cn/gxdt/"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-ndrc",
+      "name": "国家发展改革委",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.ndrc.gov.cn/xwdt/xwfb/",
+        "baseUrl": "https://www.ndrc.gov.cn/xwdt/xwfb/",
+        "parseMode": "html",
+        "itemSelector": "ul.u-list li",
+        "linkSelector": "a",
+        "publishedAtSelector": "span",
+        "allowUrlPrefixes": [
+          "https://www.ndrc.gov.cn/xwdt/xwfb/"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-mofcom",
+      "name": "商务部",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.mofcom.gov.cn/xwfb/index.html",
+        "baseUrl": "https://www.mofcom.gov.cn/",
+        "parseMode": "html",
+        "itemSelector": "ul.txtList_01 li",
+        "linkSelector": "a",
+        "publishedAtSelector": "span",
+        "allowUrlPrefixes": [
+          "https://www.mofcom.gov.cn/xwfb/"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-samr",
+      "name": "国家市场监督管理总局",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.samr.gov.cn/",
+        "baseUrl": "https://www.samr.gov.cn/",
+        "parseMode": "html",
+        "itemSelector": "li.contentLeft0102",
+        "linkSelector": "a",
+        "denyUrlPrefixes": [
+          "https://www.samr.gov.cn/zw/sj/"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-nea",
+      "name": "国家能源局",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.nea.gov.cn/xwzx/index.htm",
+        "baseUrl": "https://www.nea.gov.cn/xwzx/index.htm",
+        "parseMode": "html",
+        "itemSelector": "ul.list01 li",
+        "linkSelector": "a",
+        "publishedAtSelector": "span.date",
+        "allowUrlPrefixes": [
+          "https://www.nea.gov.cn/"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 180,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-cnipa",
+      "name": "国家知识产权局",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.cnipa.gov.cn/module/web/jpage/dataproxy.jsp?page=1&webid=1&path=https://www.cnipa.gov.cn/&columnid=53&unitid=669&webname=%25E5%259B%25BD%25E5%25AE%25B6%25E7%259F%25A5%25E8%25AF%2586%25E4%25BA%25A7%25E6%259D%2583%25E5%25B1%2580&permissiontype=0",
+        "baseUrl": "https://www.cnipa.gov.cn/",
+        "parseMode": "html",
+        "itemSelector": "record",
+        "linkSelector": "a",
+        "titleSelector": "a",
+        "publishedAtRegex": "(\\d{4}-\\d{2}-\\d{2})",
+        "allowUrlPrefixes": [
+          "https://www.cnipa.gov.cn/art/"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 180,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-deloitte-auto",
+      "name": "德勤·汽车行业",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.deloitte.com/cn/zh/Industries/automotive.html",
+        "baseUrl": "https://www.deloitte.com",
+        "parseMode": "html",
+        "itemSelector": "a.cmp-promo-tracking",
+        "titleSelector": ".cmp-promo__content__title",
+        "allowUrlPrefixes": [
+          "https://www.deloitte.com/cn/zh/Industries/automotive/"
+        ],
+        "denyUrlPrefixes": [
+          "https://www.deloitte.com/cn/zh/Industries/automotive/about.html",
+          "https://www.deloitte.com/cn/zh/Industries/automotive/perspectives/publications-automotive.html"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "媒体"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-gwm",
+      "name": "长城汽车",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.gwm.com.cn/company.html",
+        "baseUrl": "https://www.gwm.com.cn",
+        "parseMode": "html",
+        "itemSelector": ".gwm_news li, .news_top .swiper-slide",
+        "linkSelector": "a.news_data, a.top_news",
+        "titleSelector": ".news-title, .top_news h3",
+        "publishedAtSelector": ".pub-times",
+        "allowUrlPrefixes": [
+          "https://www.gwm.com.cn/news/"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-saic",
+      "name": "上汽集团",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.saicmotor.com/chinese/xwzx/xwk/index.shtml",
+        "baseUrl": "https://www.saicmotor.com",
+        "parseMode": "html",
+        "itemSelector": ".item-panel",
+        "linkSelector": "h3 a",
+        "titleSelector": "h3 a em",
+        "publishedAtSelector": "span.date",
+        "allowUrlPrefixes": [
+          "https://www.saicmotor.com/chinese/xwzx/xwk/"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-gac",
+      "name": "广汽集团",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.gacgroup.com/cn/news",
+        "baseUrl": "https://www.gacgroup.com",
+        "parseMode": "html",
+        "itemSelector": ".list li",
+        "linkSelector": "a.title",
+        "titleSelector": "a.title p",
+        "publishedAtSelector": ".time",
+        "allowUrlPrefixes": [
+          "https://www.gacgroup.com/cn/news/detail"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-lixiang",
+      "name": "理想汽车",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.lixiang.com/news.html",
+        "baseUrl": "https://www.lixiang.com",
+        "parseMode": "html",
+        "itemSelector": ".media-card",
+        "linkSelector": "a",
+        "titleSelector": ".media-card-title",
+        "publishedAtSelector": ".media-card-date",
+        "allowUrlPrefixes": [
+          "https://www.lixiang.com/news/"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-xiaopeng",
+      "name": "小鹏汽车",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.xiaopeng.com/news",
+        "baseUrl": "https://www.xiaopeng.com",
+        "parseMode": "html",
+        "itemSelector": ".card-list .card-item",
+        "linkSelector": "a.card-item-wrap",
+        "titleSelector": ".card-info-desc",
+        "publishedAtSelector": ".card-info-time",
+        "allowUrlPrefixes": [
+          "https://www.xiaopeng.com/news/"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-eworks",
+      "name": "e-works 数字化企业网",
+      "kind": "web_list",
+      "config": {
+        "url": "https://news.e-works.net.cn/",
+        "baseUrl": "https://news.e-works.net.cn/",
+        "parseMode": "html",
+        "itemSelector": ".dec_list, .news_block2 .am-u-md-4, .hotspot.tuijian dd",
+        "titleSelector": "strong a",
+        "publishedAtSelector": ".news_time em",
+        "allowUrlPrefixes": [
+          "https://news.e-works.net.cn/category"
+        ],
+        "detail": {
+          "maxFetches": 20,
+          "publishedAtSelector": ".news_time em",
+          "publishedAtUtcOffset": "+08:00"
+        },
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "媒体"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-cechina",
+      "name": "控制工程网",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.cechina.cn/news/",
+        "baseUrl": "https://www.cechina.cn",
+        "parseMode": "html",
+        "itemSelector": "#itemlist_all li, #itemlist_news li, #itemlist_Express li",
+        "linkSelector": "h3 a",
+        "titleSelector": "h3 a",
+        "publishedAtSelector": "s.time",
+        "allowUrlPrefixes": [
+          "https://article.cechina.cn/"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "媒体"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-cinic",
+      "name": "中国产业经济信息网",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.cinic.org.cn/xw/",
+        "baseUrl": "https://www.cinic.org.cn",
+        "parseMode": "html",
+        "itemSelector": "li.load-son",
+        "linkSelector": "h3 a",
+        "titleSelector": "h3 a",
+        "publishedAtSelector": ".sp2",
+        "allowUrlPrefixes": [
+          "https://www.cinic.org.cn/xw/"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "媒体"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-cebpub",
+      "name": "中国招标投标公共服务平台",
+      "kind": "web_list",
+      "config": {
+        "url": "http://www.cebpubservice.com/monitorindustry/monitorplat/index.shtml",
+        "baseUrl": "http://www.cebpubservice.com",
+        "parseMode": "html",
+        "itemSelector": ".newslist li",
+        "linkSelector": "a",
+        "titleSelector": "a",
+        "publishedAtSelector": "span.time",
+        "allowUrlPrefixes": [
+          "http://www.cebpubservice.com/monitorindustry/"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 240,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-cls",
+      "name": "财联社",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.cls.cn/",
+        "baseUrl": "https://www.cls.cn",
+        "parseMode": "html",
+        "itemSelector": "a[href^=\"/detail/\"]",
+        "allowUrlPrefixes": [
+          "https://www.cls.cn/detail/"
+        ],
+        "detail": {
+          "maxFetches": 20,
+          "publishedAtRegex": "(20\\d{2}[-/年]\\d{1,2}[-/月]\\d{1,2}日?(?:\\s+\\d{1,2}:\\d{2}(?::\\d{2})?)?)",
+          "publishedAtUtcOffset": "+08:00"
+        },
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "媒体"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-autohome",
+      "name": "汽车之家",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.autohome.com.cn/news/",
+        "baseUrl": "https://www.autohome.com.cn/news/",
+        "parseMode": "html",
+        "itemSelector": ".news-focus li, #auto-channel-lazyload-article li",
+        "linkSelector": "a",
+        "titleSelector": "h3, h2 a",
+        "allowUrlPrefixes": [
+          "https://www.autohome.com.cn/news/2"
+        ],
+        "detail": {
+          "maxFetches": 40,
+          "publishedAtRegex": "\"publishDate\":\"([^\"]+)\"",
+          "publishedAtAuthoritative": true
+        },
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "媒体"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-sina-auto",
+      "name": "新浪汽车",
+      "kind": "web_list",
+      "config": {
+        "url": "https://auto.sina.com.cn/news/",
+        "baseUrl": "https://auto.sina.com.cn",
+        "parseMode": "html",
+        "itemSelector": "div.s-left",
+        "linkSelector": "h3 a",
+        "titleSelector": "h3 a",
+        "publishedAtSelector": "span.time",
+        "allowUrlPrefixes": [
+          "https://auto.sina.com.cn/news/2"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "媒体"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-sohu-auto",
+      "name": "搜狐汽车",
+      "kind": "web_list",
+      "config": {
+        "url": "https://auto.sohu.com/",
+        "baseUrl": "https://auto.sohu.com/",
+        "parseMode": "html",
+        "itemSelector": "div.news-box li",
+        "linkSelector": "a",
+        "titleSelector": "a",
+        "allowUrlPrefixes": [
+          "https://www.sohu.com/a/"
+        ],
+        "detail": {
+          "maxFetches": 40,
+          "publishedAtSelector": "span.content-main-desc--time"
+        },
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "媒体"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-marklines",
+      "name": "MarkLines",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.marklines.com/cn/news",
+        "baseUrl": "https://www.marklines.com",
+        "parseMode": "html",
+        "itemSelector": "article",
+        "linkSelector": ".news-title a",
+        "titleSelector": ".news-title a",
+        "publishedAtSelector": "time",
+        "allowUrlPrefixes": [
+          "https://www.marklines.com/cn/news/"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 240,
+      "tags": [
+        "媒体"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-gasgoo-robot",
+      "name": "盖世汽车·具身智能",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.gasgoo.com/robot/news/",
+        "baseUrl": "https://www.gasgoo.com",
+        "parseMode": "html",
+        "itemSelector": "article.article-item",
+        "linkSelector": "h2.article-list-title a",
+        "titleSelector": "h2.article-list-title a",
+        "publishedAtSelector": "p.card-meta",
+        "allowUrlPrefixes": [
+          "https://www.gasgoo.com/apps/"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "媒体"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-rolandberger",
+      "name": "罗兰贝格·汽车",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.rolandberger.com/en/Expertise/Industries/Automotive/",
+        "baseUrl": "https://www.rolandberger.com",
+        "parseMode": "html",
+        "itemSelector": "div.tile",
+        "linkSelector": "a.c-tile-content, a.c-tile-content-new",
+        "titleSelector": ".headline span, .headline h2",
+        "allowUrlPrefixes": [
+          "https://www.rolandberger.com/en/Insights/Publications/"
+        ],
+        "detail": {
+          "maxFetches": 40,
+          "publishedAtRegex": "\"datePublished\":\"([^\"]+)\""
+        },
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
       "tags": [
         "媒体"
       ],

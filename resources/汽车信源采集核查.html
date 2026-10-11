@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>汽车信源采集核查</title>
+<style>
+  /* 设计：工程数据表。冷灰纸面 + 墨色字，状态用四个语义色（绿=可直接接 / 琥珀=需写选择器 / 红=做不了 / 灰=不可达），
+     每个状态都带文字标签，颜色只是冗余通道。地址与编号用等宽体，数字用等宽数字。 */
+  :root {
+    --bg: #f5f6f7;
+    --surface: #ffffff;
+    --surface-2: #eceff1;
+    --fg: #151b21;
+    --fg-2: #47525d;
+    --fg-3: #707b86;
+    --line: #dcdfe3;
+    --line-2: #c6ccd2;
+    --accent: #1d3a6e;
+    --ok: #0a7d55;
+    --work: #e09b00;
+    --no: #9e1b16;
+    --none: #9aa3ae;
+    --ok-bg: #e3f2eb;
+    --work-bg: #fcf1d9;
+    --no-bg: #fae8e6;
+    --none-bg: #ebedf0;
+    --sans: system-ui, -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    --r: 5px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #131719; --surface: #1a1f22; --surface-2: #232a2e;
+      --fg: #e9eef2; --fg-2: #a9b5bf; --fg-3: #7e8b96;
+      --line: #2b333a; --line-2: #3a444c;
+      --accent: #93b7f2;
+      --ok: #2b9169; --work: #cf8f16; --no: #d4553f; --none: #96a0ae;
+      --ok-bg: #162f28; --work-bg: #32280f; --no-bg: #3a1e1b; --none-bg: #262c31;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #131719; --surface: #1a1f22; --surface-2: #232a2e;
+    --fg: #e9eef2; --fg-2: #a9b5bf; --fg-3: #7e8b96;
+    --line: #2b333a; --line-2: #3a444c;
+    --accent: #93b7f2;
+    --ok: #2b9169; --work: #cf8f16; --no: #d4553f; --none: #96a0ae;
+    --ok-bg: #162f28; --work-bg: #32280f; --no-bg: #3a1e1b; --none-bg: #262c31;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { padding-inline: 20px; padding-block: 0 72px; max-width: 1180px; margin: 0 auto; }
+
+  /* ---- 页头 ---- */
+  header.top {
+    position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    padding-block: 18px 14px;
+    margin-inline: -20px; padding-inline: 20px;
+  }
+  .eyebrow {
+    font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--fg-3); font-weight: 600; font-variant-numeric: tabular-nums;
+  }
+  h1 { margin: 4px 0 0; font-size: 23px; line-height: 1.25; letter-spacing: -.01em; text-wrap: balance; font-weight: 650; }
+  .lede { margin: 6px 0 0; color: var(--fg-2); font-size: 14px; max-width: 62ch; }
+
+  /* ---- 计数 ---- */
+  .tiles { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .tile {
+    flex: 1 1 130px; min-width: 0;
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--r);
+    padding: 10px 12px; display: flex; align-items: baseline; gap: 8px;
+  }
+  .tile .n { font-size: 21px; font-weight: 650; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+  .tile .k { font-size: 12.5px; color: var(--fg-2); min-width: 0; }
+  .tile[data-v="ok"] .n { color: var(--ok); }
+  .tile[data-v="work"] .n { color: var(--work); }
+  .tile[data-v="no"] .n { color: var(--no); }
+  .tile[data-v="none"] .n { color: var(--fg-3); }
+
+  /* ---- 筛选 ---- */
+  .filters { display: flex; flex-direction: column; gap: 9px; margin-top: 18px; }
+  .frow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .frow > .lab { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-3); font-weight: 600; width: 62px; flex: 0 0 auto; }
+  .chip {
+    font-family: inherit; font-size: 12.5px; line-height: 1;
+    padding: 6px 10px; border-radius: 999px; cursor: pointer;
+    background: var(--surface); color: var(--fg-2);
+    border: 1px solid var(--line-2);
+    display: inline-flex; align-items: center; gap: 6px;
+    font-variant-numeric: tabular-nums;
+  }
+  .chip:hover { border-color: var(--fg-3); color: var(--fg); }
+  .chip[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); font-weight: 600; }
+  .chip .dot { width: 7px; height: 7px; border-radius: 50%; flex: 0 0 auto; background: var(--fg-3); }
+  .chip[data-v="ok"] .dot { background: var(--ok); }
+  .chip[data-v="work"] .dot { background: var(--work); }
+  .chip[data-v="no"] .dot { background: var(--no); }
+  .chip[data-v="none"] .dot { background: var(--none); }
+  .chip[aria-pressed="true"] .dot { box-shadow: 0 0 0 2px var(--bg); }
+  .chip .c { color: var(--fg-3); font-size: 11.5px; }
+  .chip[aria-pressed="true"] .c { color: var(--bg); opacity: .75; }
+  .chip:focus-visible, .search:focus-visible, .reset:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .search {
+    font-family: inherit; font-size: 13.5px; padding: 8px 11px;
+    background: var(--surface); color: var(--fg);
+    border: 1px solid var(--line-2); border-radius: var(--r);
+    min-width: 0; width: 100%; max-width: 320px;
+  }
+  .search::placeholder { color: var(--fg-3); }
+  .reset {
+    font-family: inherit; font-size: 12.5px; padding: 7px 11px; cursor: pointer;
+    background: transparent; color: var(--fg-2);
+    border: 1px solid var(--line-2); border-radius: var(--r);
+  }
+  .reset:hover { color: var(--fg); border-color: var(--fg-3); }
+
+  .countline {
+    margin-top: 14px; font-size: 12.5px; color: var(--fg-3);
+    font-variant-numeric: tabular-nums; display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap;
+  }
+
+  /* ---- 表格 ---- */
+  .tablebox { margin-top: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; min-width: 900px; }
+  thead th {
+    position: sticky; top: 0; z-index: 2;
+    background: var(--surface-2); color: var(--fg-2);
+    font-size: 11px; letter-spacing: .07em; text-transform: uppercase; font-weight: 600;
+    text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line-2);
+    white-space: nowrap;
+  }
+  tbody td { padding: 11px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:hover td { background: var(--surface-2); }
+  .num { font-family: var(--mono); font-size: 12px; color: var(--fg-3); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .site { font-weight: 600; }
+  .site .meta { display: flex; gap: 7px; align-items: center; margin-top: 3px; font-weight: 400; }
+  .grp { font-size: 11.5px; color: var(--fg-3); }
+  .tier {
+    font-family: var(--mono); font-size: 10.5px; font-weight: 600; letter-spacing: .03em;
+    padding: 1px 5px; border-radius: 3px; border: 1px solid var(--line-2); color: var(--fg-2);
+  }
+  .tier[data-t="P0"] { border-color: var(--accent); color: var(--accent); }
+
+  .verdict {
+    display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+    font-size: 12px; font-weight: 600; padding: 4px 9px 4px 7px; border-radius: 999px;
+  }
+  .verdict .dot { width: 7px; height: 7px; border-radius: 50%; flex: 0 0 auto; }
+  .verdict[data-v="ok"] { background: var(--ok-bg); color: var(--ok); }
+  .verdict[data-v="work"] { background: var(--work-bg); color: var(--fg); }
+  .verdict[data-v="no"] { background: var(--no-bg); color: var(--no); }
+  .verdict[data-v="none"] { background: var(--none-bg); color: var(--fg-2); }
+  .verdict[data-v="ok"] .dot { background: var(--ok); }
+  .verdict[data-v="work"] .dot { background: var(--work); }
+  .verdict[data-v="no"] .dot { background: var(--no); }
+  .verdict[data-v="none"] .dot { background: var(--none); }
+
+  .method { font-size: 12.5px; color: var(--fg-2); white-space: nowrap; }
+  .addr { font-family: var(--mono); font-size: 11.5px; color: var(--fg); word-break: break-all; max-width: 30ch; }
+  .note { font-size: 12.5px; color: var(--fg-2); min-width: 18ch; }
+
+  .empty { padding: 40px 20px; text-align: center; color: var(--fg-3); font-size: 14px; }
+
+  /* ---- 脚注 ---- */
+  .notes { margin-top: 40px; display: grid; gap: 14px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px 18px; }
+  .card h2 { margin: 0 0 4px; font-size: 15px; font-weight: 650; letter-spacing: -.005em; }
+  .card h2 .flag { font-family: var(--mono); font-size: 11px; color: var(--no); margin-right: 7px; }
+  .card p { margin: 8px 0 0; color: var(--fg-2); font-size: 13.5px; max-width: 78ch; }
+  .card ul { margin: 8px 0 0; padding-left: 18px; color: var(--fg-2); font-size: 13.5px; }
+  .card li { margin: 4px 0; }
+  .card code { font-family: var(--mono); font-size: 12px; background: var(--surface-2); padding: 1.5px 5px; border-radius: 3px; color: var(--fg); }
+  .cols { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+
+  /* ---- 手机：表格转卡片 ---- */
+  @media (max-width: 760px) {
+    .wrap { padding-inline: 16px; }
+    header.top { margin-inline: -16px; padding-inline: 16px; }
+    h1 { font-size: 20px; }
+    .frow > .lab { width: 100%; }
+    table { min-width: 0; }
+    thead { display: none; }
+    tbody tr { display: block; border-bottom: 1px solid var(--line-2); padding: 12px 0; }
+    tbody tr:last-child { border-bottom: 0; }
+    tbody tr:hover td { background: transparent; }
+    tbody td { display: block; border: 0; padding: 3px 14px; }
+    tbody td::before {
+      content: attr(data-label);
+      display: block; font-size: 10.5px; letter-spacing: .07em; text-transform: uppercase;
+      color: var(--fg-3); font-weight: 600; margin-bottom: 1px;
+    }
+    tbody td:first-child { padding-top: 0; }
+    .addr { max-width: none; }
+    .tablebox { padding: 4px 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">逐站实测 · 2026-10-11</div>
+    <h1>汽车信源采集核查</h1>
+    <p class="lede">把那份 70 条的信息源清单逐站跑了一遍，看哪些能自动提取最新资讯。结论按「接入成本」分四档 —— 能直接配 feed 的和要写选择器的，代价差很远。</p>
+    <div class="tiles" id="tiles"></div>
+  </header>
+
+  <div class="filters">
+    <div class="frow" id="vrow"><span class="lab">结论</span></div>
+    <div class="frow" id="grow"><span class="lab">分组</span></div>
+    <div class="frow" id="trow"><span class="lab">优先级</span></div>
+    <div class="frow">
+      <span class="lab">查找</span>
+      <input class="search" id="q" type="search" placeholder="站点名、域名、接入方式…" autocomplete="off" aria-label="搜索站点">
+      <button class="reset" id="reset" type="button">重置筛选</button>
+    </div>
+  </div>
+
+  <div class="countline"><span id="shown"></span><span id="hint"></span></div>
+
+  <div class="tablebox" id="tablebox">
+    <table>
+      <thead>
+        <tr>
+          <th>编号</th><th>站点</th><th>结论</th><th>接入方式</th><th>地址 / 接口</th><th>备注</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div class="empty" id="empty" hidden>没有符合条件的站点。换个筛选或清空搜索。</div>
+  </div>
+
+  <div class="notes">
+    <div class="cols">
+      <div class="card">
+        <h2><span class="flag">坑 1</span>UA 白名单</h2>
+        <p>探测时用浏览器 UA，但框架发的是 <code>Mozilla/5.0 (compatible; CarHotBot/1.0; …)</code>。换回真实 UA 复测，三家整车企业直接拒绝：</p>
+        <ul>
+          <li>吉利控股 RSS → <strong>418</strong>（浏览器 UA 下是 200）</li>
+          <li>一汽集团新闻页 → <strong>410 Gone</strong></li>
+          <li>蔚来新闻页 → <strong>567</strong></li>
+        </ul>
+        <p>而且框架的 <code>rss</code> 和 <code>web_list</code> 信源配置里没有 <code>headers</code> 字段（<code>config-keys.ts</code> 白名单管着），改不了 UA；只有 <code>json_list</code> 支持。所以这三家判为不可用 —— 伪装浏览器既违背框架用诚实爬虫名的设计，也不是长久之计。</p>
+        <p><strong>含义：</strong>接入任何新源之前，都要用框架真实 UA 再测一次。表里 ✅ 与 🟡 的主要目标都已复核过。</p>
+      </div>
+      <div class="card">
+        <h2><span class="flag">坑 2</span>文档里写错的地址</h2>
+        <ul>
+          <li><strong>19 汽车商业评论</strong>：文档写的 <code>autobizreview.com</code> 是它的公众号 ID，官网是 <code>inabr.com</code></li>
+          <li><strong>11 乘联会</strong>：不是 <code>cada.cn</code>，独立官网是 <code>cpcaauto.com</code></li>
+          <li><strong>26 盖世汽车研究院</strong>：<code>gasgoo.com</code> 会跳到 <code>/robot/</code>，那是个具身智能门户，不是汽车研究院</li>
+          <li><strong>51 高工智能汽车</strong>：<code>gaogongauto.com</code> 域名不存在</li>
+          <li><strong>59 控制工程网</strong>：<code>controleng.cn</code> 已 301 跳到 <code>cecchina.cn</code></li>
+          <li><strong>02 发改委</strong>：RSS 路径存在但已失效 —— 返回 0 条，或最新停在 2022 年 1 月</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>怎么测的</h2>
+      <p>每站按首页 → RSS 常见路径 → 新闻/公告列表页的顺序实测，判断文章链接是否出现在<strong>原始 HTML</strong> 里（框架没有无头浏览器，JS 渲染的列表一律抓不到）。随后用框架真实 UA 复核了所有高价值目标。<strong>只读探测</strong>，没提交表单、没绕验证码、没改仓库。</p>
+      <p>文档第 10 节那套字段（<code>evidence_level</code>、<code>verification</code>、<code>importance</code>）是给另一个采集流程用的，和这套框架的信源模型不是一回事 —— 框架自己有 <code>articles</code> / <code>analyses</code> / <code>publications</code> 结构，不需要手工填。</p>
+    </div>
+
+    <div class="card">
+      <h2>合并掉的 5 个重复条目</h2>
+      <p>70 个条目去重后是 65 个独立站点。重复的是：<strong>16</strong>（＝10 中国汽车流通协会）、<strong>55</strong>（＝12 工程学会）、<strong>56</strong>（＝01 工信部）、<strong>57</strong>（＝13 中汽研）、<strong>67</strong>（＝08 知识产权局）。另有第 11 项与第 10/16 项在机构上其实同源（乘联会是流通协会的分支），但站点不同。</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const VERDICTS = {
+  ok:   { label: "可直接接",  hint: "配 feed 地址或接口即可，零选择器" },
+  work: { label: "需写选择器", hint: "列表页服务端渲染，要写 CSS 选择器" },
+  no:   { label: "做不了",    hint: "反爬墙 / JS 渲染 / 仅浏览器可用" },
+  none: { label: "不可达",    hint: "站点超时或域名不存在" }
+};
+const ORDER = ["ok", "work", "no", "none"];
+
+const DATA = [
+  ["01","工业和信息化部","政策监管","P0","work","web_list（仅首页）","miit.gov.cn","栏目页是 jpaas JS 空壳，文章链接只在首页"],
+  ["02","国家发展改革委","政策监管","P0","work","web_list","ndrc.gov.cn/xwdt/xwfb/","RSS 路径存在但已失效：0 条，或停在 2022-01"],
+  ["03","商务部","政策监管","P0","work","web_list","mofcom.gov.cn/xwfb/index.html","69 条 li 带链接与日期"],
+  ["04","国家统计局","政策监管","P0","ok","RSS","stats.gov.cn/sj/zxfb/rss.xml","另有 /sj/sjjd/rss.xml；500 条 / 4.5MB，在 8MB 上限内"],
+  ["05","海关总署","政策监管","P1","no","—","customs.gov.cn","创宇盾 JS 挑战，所有路径 412"],
+  ["06","国家市场监督管理总局","政策监管","P1","work","web_list（仅首页）","samr.gov.cn","与工信部同一套 CMS，栏目页空壳"],
+  ["07","国家能源局","政策监管","P1","work","web_list","nea.gov.cn/xwzx/index.htm","40 条；链接为相对路径，需 baseUrl"],
+  ["08","国家知识产权局","政策监管","P2","work","web_list","cnipa.gov.cn/col/col53/index.html","45 条；响应 gzip，抓取需 --compressed"],
+  ["09","中国汽车工业协会","行业协会","P0","work","web_list","http://www.caam.org.cn/hyzx","产销数据在 /tjsj；只有 http://，443 被防火墙挡"],
+  ["10","中国汽车流通协会","行业协会","P0","work","web_list","cada.cn/Trends/list_92_1.html","23 条带日期"],
+  ["11","乘用车市场信息联席分会","行业协会","P0","no","—","cpcaauto.com","文档地址写错（不是 cada.cn）；整站 403"],
+  ["12","中国汽车工程学会","行业协会","P0","work","web_list","sae-china.org/news/","12 条；/rss 全是「栏目已关闭」桩页"],
+  ["13","中国汽车技术研究中心","行业协会","P0","work","web_list（仅首页）","catarc.ac.cn","栏目页文章 id 藏在 onclick 里，框架取不到 href"],
+  ["14","中国汽车战略与政策研究中心","行业协会","P0","ok","JSON 接口","catarc.net.cn/web/v1/article/articleTimeList","免鉴权开放接口，参数 article_type / page / limit"],
+  ["15","中国汽车工业信息网","行业协会","P1","no","—","autoinfo.org.cn","接口需认证，另有 fingerprintjs"],
+  ["17","盖世汽车","行业媒体","P0","ok","RSS","auto.gasgoo.com/rss/ClassRss.aspx?ClassId=-1","最省事的一个。分频道：103 供应链 /107 新车 /108 行业 /109 车企 /110 销量 /501 新能源 /601 智能网联"],
+  ["18","中国汽车报","行业媒体","P0","no","—","cnautonews.com","只有 http://（443 未开）；正文是 JS 变量赋值，非标准 JSON"],
+  ["19","汽车商业评论","行业媒体","P0","work","web_list（首页）","inabr.com","文档地址是公众号 ID，域名不通；正确官网为 inabr.com"],
+  ["20","第一电动网","行业媒体","P0","work","web_list","d1ev.com/news","已在用（web-d1ev）；链接尾部带 #comment，选择器需截断"],
+  ["21","汽车之家","行业媒体","P1","work","web_list","autohome.com.cn/news/","110 条链接"],
+  ["22","易车","行业媒体","P1","no","—","yiche.com","新闻子域是腾讯 WAF 验证码"],
+  ["23","新浪汽车","行业媒体","P1","work","web_list","auto.sina.com.cn/news/","305 条；另有 JSONP 接口备选"],
+  ["24","搜狐汽车","行业媒体","P2","work","web_list（仅首页）","auto.sohu.com","58 条；老 RSS 停在 2005 年"],
+  ["25","MarkLines","数据库/咨询","P0","work","web_list","marklines.com/cn/news","76 条"],
+  ["26","盖世汽车研究院","数据库/咨询","P0","work","web_list","gasgoo.com/robot/","名称与地址都错：302 后是「具身智能门户」"],
+  ["27","罗兰贝格","数据库/咨询","P1","work","web_list","rolandberger.com/en/Insights/","出版文章为绝对链接"],
+  ["28","麦肯锡","数据库/咨询","P1","no","—","mckinsey.com","TLS 握手正常，随后被按指纹重置"],
+  ["29","德勤","数据库/咨询","P1","work","web_list","deloitte.com/cn/zh/Industries/automotive.html","78 条；新闻稿列表是 JS 渲染，抓不到"],
+  ["30","普华永道","数据库/咨询","P1","no","—","pwc.com","Akamai WAF 403"],
+  ["31","S&P Global Mobility","数据库/咨询","P1","no","—","spglobal.com/mobility","403"],
+  ["32","BloombergNEF","数据库/咨询","P1","ok","RSS","about.bnef.com/feed/","10 条"],
+  ["33","比亚迪","整车企业","—","no","—","byd.com/cn/news","列表 JS 渲染，接口需验签"],
+  ["34","吉利控股","整车企业","—","no","仅浏览器可用","zgh.com/media-center/news/feed/","有 RSS，但按 UA 白名单：框架 UA 返回 418"],
+  ["35","奇瑞汽车","整车企业","—","ok","JSON 接口（已停更）","mobile-consumer-sapp.chery.cn/web/pgc/contents/paging-for-c-code-type","172 条，最新 2026-03-19，已 7 个月未更新"],
+  ["36","长城汽车","整车企业","—","work","web_list","gwm.com.cn/company.html","最新 2026-09-29"],
+  ["37","长安汽车","整车企业","—","no","替代站可用","changan.com.cn","主站是 Vue SPA；替代 globalchangan.com/cn/newsroom.html 偏英文"],
+  ["38","上汽集团","整车企业","—","work","web_list","saicmotor.com/chinese/xwzx/xwk/index.shtml","全静态 .shtml，最不易因改版失效"],
+  ["39","广汽集团","整车企业","—","work","web_list","gacgroup.com/cn/news","标题在 img alt 上，无独立日期节点"],
+  ["40","一汽集团","整车企业","—","no","仅浏览器可用","faw.com.cn/fawcn/373694/373706/","页面结构好，但框架 UA 返回 410 Gone"],
+  ["41","东风汽车集团","整车企业","—","ok","JSON 接口","dfmc.com.cn/news/qiyexinwen.json","501 条，最新 2026-10-10，字段最全"],
+  ["42","理想汽车","整车企业","—","work","web_list","lixiang.com/news.html","月度交付 + 新车发布，节奏稳定"],
+  ["43","蔚来","整车企业","—","no","仅浏览器可用","nio.cn/news","框架 UA 返回 567；nio.com 会跳 nio.cn"],
+  ["44","小鹏汽车","整车企业","—","work","web_list","xiaopeng.com/news","最新 2026-10-02"],
+  ["45","小米汽车","整车企业","—","no","—","xiaomiev.com","国内站根本没有新闻栏目"],
+  ["46","巨潮资讯网","信息披露","P0","ok","JSON 接口（POST）","cninfo.com.cn/new/hisAnnouncement/query","财报 / 并购 / 重大公告；359067 条"],
+  ["47","上海证券交易所","信息披露","P0","ok","JSON 接口（GET + Referer）","query.sse.com.cn/security/stock/queryCompanyBulletinNew.do","须带 Referer；另有现成静态 JSON 可用"],
+  ["48","深圳证券交易所","信息披露","P0","ok","JSON 接口（POST）","szse.cn/api/disc/announcement/annList","2164 条"],
+  ["49","香港交易所披露易","信息披露","P0","ok","JSON 接口（GET + Referer）","www1.hkexnews.hk/search/titleSearchServlet.do","须 Referer + X-Requested-With；t1code/t2Gcode/t2code 必须为 -2"],
+  ["50","高工锂电","供应链/技术","P0","none","—","gg-lb.com","DNS 正常但 TCP 全超时，疑似只放行国内 IP"],
+  ["51","高工智能汽车","供应链/技术","P0","none","—","gaogongauto.com","域名不存在（NXDOMAIN）"],
+  ["52","芝能汽车","供应链/技术","P1","none","—","zhinengqiche.com","TCP 443 超时"],
+  ["53","佐思汽研","供应链/技术","P0","no","—","researchinchina.com","实为付费报告目录站，新闻列表停在 2016"],
+  ["54","中国信息通信研究院","供应链/技术","P1","no","—","caict.ac.cn","瑞数 WAF，412"],
+  ["58","e-works 数字化企业网","智能制造","P0","work","web_list","news.e-works.net.cn/","60 条；/rss 全是 200 的软 404 页"],
+  ["59","控制工程网","智能制造","P1","work","web_list","cecchina.cn/news/","文档域名已 301 跳到 cecchina.cn"],
+  ["60","中国工业新闻网","智能制造","P1","work","web_list","cinic.org.cn/xw/","站名实为「中国产业经济信息网」，条目名与 URL 不符"],
+  ["61","西门子数字化工业软件","智能制造","P1","ok","RSS","press.siemens.com/global/en/rss.xml","只有英文；sw.siemens.com 会跳到 siemens.com"],
+  ["62","罗克韦尔自动化","智能制造","P1","no","—","rockwellautomation.com","AEM，新闻页无文章链接"],
+  ["63","达索系统","智能制造","P1","ok","RSS","3ds.com/contents/feed/content/article_press_release","另有中文版 /zh-hans/…"],
+  ["64","全国公共资源交易平台","投资/主体","P0","ok","JSON 接口（POST）","ggzy.gov.cn/information/pubTradingInfo/getTradList","1000+ 条，有频率限制"],
+  ["65","中国招标投标公共服务平台","投资/主体","P0","work","web_list（旁路）","cebpubservice.com/monitorindustry/monitorplat/index.shtml","公告数据被腾讯 WAF 挡，只能抓「行业动态」20 条"],
+  ["66","国家企业信用信息公示系统","投资/主体","P0","no","—","gsxt.gov.cn","加速乐 JS 挑战，全站 521"],
+  ["68","财联社","投资/主体","P0","work","web_list（首页）","cls.cn","首页 66 条 /detail/ 链接全在源码里；/telegraph 是 JS 渲染"],
+  ["69","36氪","投资/主体","P1","ok","JSON 接口（POST）","gateway.36kr.com/api/mis/nav/newsflash/flow","HTML 侧被火山引擎 WAF 挡，走接口；pageEvent 必须为 2"],
+  ["70","亿欧","投资/主体","P1","no","—","iyiou.com","腾讯云 WAF 202，且列表是 Vue SPA"]
+];
+
+const STORE_KEY = "carhot-sources-filter";
+let state = { v: new Set(), g: new Set(), t: new Set(), q: "" };
+
+function load() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return;
+    const s = JSON.parse(raw);
+    state = {
+      v: new Set(Array.isArray(s.v) ? s.v.filter(x => VERDICTS[x]) : []),
+      g: new Set(Array.isArray(s.g) ? s.g : []),
+      t: new Set(Array.isArray(s.t) ? s.t : []),
+      q: typeof s.q === "string" ? s.q : ""
+    };
+  } catch (e) { /* 无存储时按默认渲染 */ }
+}
+function save() {
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify({
+      v: [...state.v], g: [...state.g], t: [...state.t], q: state.q
+    }));
+  } catch (e) { /* 忽略 */ }
+}
+
+const groups = [...new Set(DATA.map(r => r[2]))];
+const tiers = [...new Set(DATA.map(r => r[3]))].filter(t => t !== "—").sort();
+
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function countV(v) { return DATA.filter(r => r[4] === v).length; }
+
+function buildTiles() {
+  document.getElementById("tiles").innerHTML = ORDER.map(v =>
+    `<div class="tile" data-v="${v}"><span class="n">${countV(v)}</span><span class="k">${VERDICTS[v].label}</span></div>`
+  ).join("");
+}
+
+function buildChips() {
+  document.getElementById("vrow").insertAdjacentHTML("beforeend", ORDER.map(v =>
+    `<button class="chip" type="button" data-kind="v" data-v="${v}" aria-pressed="false"><span class="dot"></span>${VERDICTS[v].label}<span class="c">${countV(v)}</span></button>`
+  ).join(""));
+  document.getElementById("grow").insertAdjacentHTML("beforeend", groups.map(g => {
+    const n = DATA.filter(r => r[2] === g).length;
+    return `<button class="chip" type="button" data-kind="g" data-g="${esc(g)}" aria-pressed="false">${esc(g)}<span class="c">${n}</span></button>`;
+  }).join(""));
+  document.getElementById("trow").insertAdjacentHTML("beforeend", tiers.map(t => {
+    const n = DATA.filter(r => r[3] === t).length;
+    return `<button class="chip" type="button" data-kind="t" data-t="${t}" aria-pressed="false">${t}<span class="c">${n}</span></button>`;
+  }).join(""));
+}
+
+function syncChips() {
+  document.querySelectorAll('.chip').forEach(c => {
+    const k = c.dataset.kind;
+    const on = k === "v" ? state.v.has(c.dataset.v)
+      : k === "g" ? state.g.has(c.dataset.g)
+      : state.t.has(c.dataset.t);
+    c.setAttribute("aria-pressed", on ? "true" : "false");
+  });
+}
+
+function matches(r) {
+  const [, name, group, tier, v, method, addr, note] = r;
+  if (state.v.size && !state.v.has(v)) return false;
+  if (state.g.size && !state.g.has(group)) return false;
+  if (state.t.size && !state.t.has(tier)) return false;
+  if (state.q) {
+    const hay = (name + " " + group + " " + method + " " + addr + " " + note + " " + r[0]).toLowerCase();
+    if (!hay.includes(state.q)) return false;
+  }
+  return true;
+}
+
+function render() {
+  const rows = DATA.filter(matches);
+  document.getElementById("rows").innerHTML = rows.map(r => {
+    const [n, name, group, tier, v, method, addr, note] = r;
+    const tierHtml = tier === "—" ? "" : `<span class="tier" data-t="${tier}">${tier}</span>`;
+    return `<tr>
+      <td class="num" data-label="编号">${n}</td>
+      <td data-label="站点"><div class="site">${esc(name)}<div class="meta"><span class="grp">${esc(group)}</span>${tierHtml}</div></div></td>
+      <td data-label="结论"><span class="verdict" data-v="${v}"><span class="dot"></span>${VERDICTS[v].label}</span></td>
+      <td class="method" data-label="接入方式">${esc(method)}</td>
+      <td class="addr" data-label="地址 / 接口">${esc(addr)}</td>
+      <td class="note" data-label="备注">${esc(note)}</td>
+    </tr>`;
+  }).join("");
+  document.getElementById("shown").textContent = `显示 ${rows.length} / ${DATA.length} 个站点`;
+  document.getElementById("hint").textContent = state.v.size || state.g.size || state.t.size || state.q
+    ? "已筛选" : "点结论或分组可以叠加筛选";
+  document.getElementById("empty").hidden = rows.length > 0;
+}
+
+document.querySelectorAll('.chip').forEach(c => c.addEventListener("click", () => {
+  const k = c.dataset.kind;
+  const set = k === "v" ? state.v : k === "g" ? state.g : state.t;
+  const key = k === "v" ? c.dataset.v : k === "g" ? c.dataset.g : c.dataset.t;
+  if (set.has(key)) set.delete(key); else set.add(key);
+  syncChips(); render(); save();
+}));
+
+const qEl = document.getElementById("q");
+qEl.addEventListener("input", () => { state.q = qEl.value.trim().toLowerCase(); render(); save(); });
+
+document.getElementById("reset").addEventListener("click", () => {
+  state = { v: new Set(), g: new Set(), t: new Set(), q: "" };
+  qEl.value = ""; syncChips(); render(); save();
+});
+
+load();
+buildTiles();
+buildChips();
+qEl.value = state.q;
+syncChips();
+render();
+</script>
+
+</body>
+</html>
