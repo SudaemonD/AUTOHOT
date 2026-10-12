@@ -1,0 +1,23 @@
+{
+  "$comment": "需要真实浏览器才能读的站点：列表条目没有链接、正文要跑 JavaScript 才有（单页应用）。用 scripts/render-ingest.ts 采集并推送给 POST /api/ingest/items。列表或正文能直接读的站不要放这里——那些用后台「信源」页的 rss / web_list / json_list。加一个站就是加一条 profile，先用 --dry-run 核对抽到的正文。",
+  "$fields": {
+    "sourceId": "推送用的信源 id。站里没有会自动建（external、T2、isolated），要在后台把它改成 editorial 才会上站",
+    "sourceName": "推送时用的名字",
+    "listUrl": "列表页地址",
+    "rowPattern": "识别列表条目的正则：标题 + 日期，日期必须是最后一个捕获组",
+    "detailUrl": "点进详情后地址里必须包含的片段，用来确认这一下真的进了详情页",
+    "chrome": "正文里要切掉的页脚和杂项：从第一条匹配的行开始全部丢弃",
+    "skipEmptyBody": "true 时抽不到正文的条目不推送（纯图片公告这类，推了也上不了站，还照样花评分调用）"
+  },
+  "sites": [
+    {
+      "sourceId": "deepal-official",
+      "sourceName": "深蓝汽车官网",
+      "listUrl": "https://www.deepal.com.cn/news",
+      "rowPattern": "^(.*?)(20\\d\\d-\\d\\d-\\d\\d)$",
+      "detailUrl": "id=",
+      "chrome": "隐私政策|用户投诉电话|Copyright|ICP备|公网安备|营业执照|扫一扫|管家中心",
+      "skipEmptyBody": true
+    }
+  ]
+}
