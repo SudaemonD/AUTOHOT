@@ -1,7 +1,8 @@
 // Failure cases: a single-topic count disagrees with the membership list; a null company pattern
 // still depends on titles; a title match bypasses required tags; one subject differs from several;
 // an original-title or case-insensitive match is lost; a company name matches inside another word;
-// non-selected, withdrawn and unreleased reports change the selected list or pool count incorrectly.
+// a Chinese name stops naming its company once a model code follows it; non-selected, withdrawn and
+// unreleased reports change the selected list or pool count incorrectly.
 import { tag } from "./setup.ts";
 import assert from "node:assert/strict";
 import { after, test } from "node:test";
@@ -22,6 +23,12 @@ test("topic lists and pool counts share the exact membership predicate", async (
     { title: "Unrelated", original: "TESLA launches a car", tags: ["entity:tesla", "entity:byd"], topics: ["tesla"] },
     { title: "Geelytics", original: null, tags: ["entity:geely", "entity:byd"], topics: [] },
     { title: "发布吉利的新车", original: null, tags: ["entity:geely", "entity:byd"], topics: ["geely"] },
+    // A Chinese name keeps naming the company when a model code follows it, and when another company
+    // shares the report (only the title can carry the membership then).
+    { title: "深蓝L06正式预售，预售价13.99万元起", original: null, tags: ["entity:changan", "entity:byd"], topics: ["changan"] },
+    { title: "阿维塔T09全球首发", original: null, tags: ["entity:changan", "entity:geely"], topics: ["changan"] },
+    // A Latin name still matches as a whole word only.
+    { title: "DeepalL06 announced", original: null, tags: ["entity:changan", "entity:byd"], topics: [] },
     { title: "Unselected", original: null, tags: ["智驾", "entity:tesla"], topics: ["smart-driving", "tesla"], selected: false },
     { title: "Withdrawn", original: null, tags: ["智驾", "entity:tesla"], topics: ["smart-driving", "tesla"], visibility: "withdrawn" },
     { title: "Future", original: null, tags: ["智驾", "entity:tesla"], topics: ["smart-driving", "tesla"], future: true },
@@ -36,7 +43,7 @@ test("topic lists and pool counts share the exact membership predicate", async (
       VALUES (${id}, ${prefix}, ${row.title}, ${row.original}, ${`https://example.org/${id}`}, ${at}, ${at},
         ${at}, ${row.future ? new Date(+now + 1) : at}, ${row.selected ?? true}, true, ${row.visibility ?? "public"}, 'news', ${row.tags})`;
   }
-  const topics = ["tesla", "geely", "smart-driving"].map(slug => findTopic(slug)!);
+  const topics = ["tesla", "geely", "changan", "smart-driving"].map(slug => findTopic(slug)!);
   const membership = new Map((await sql<{ id: string; topics: string[] }[]>`
     SELECT p.article_id AS id, ${topicMembership(topics)} AS topics FROM publications p WHERE p.source_id = ${prefix}`)
     .map(row => [row.id, row.topics]));

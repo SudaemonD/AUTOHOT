@@ -43,11 +43,15 @@ interface TopicFile {
 const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const nameParts = (name: string) => name.split("/").map((s) => s.trim()).filter(Boolean);
 
-/** Any name of the company: the topic's name and its parts, the subject's names. Latin names match as whole words. */
+/**
+ * Any name of the company: the topic's name and its parts, the subject's names. A name written in Latin
+ * letters matches as a whole word only; a name in Chinese takes no boundary, because one right behind it
+ * would drop the everyday "中文名+车型代号" titles (深蓝L06, 阿维塔T09) from the company's topic.
+ */
 function titlePattern(name: string, entityId: string): string {
   const e = ENTITIES[entityId];
   const names = new Set([name, ...nameParts(name), ...(e ? [e.name, ...e.aliases, ...(e.otherNames ?? [])] : [])]);
-  return `(?<![A-Za-z])(${[...names].map(escape).join("|")})(?![A-Za-z])`;
+  return `(${[...names].map((n) => (/[A-Za-z]/.test(n) ? `(?<![A-Za-z])${escape(n)}(?![A-Za-z])` : escape(n))).join("|")})`;
 }
 
 const file = JSON.parse(readFileSync(path.join(REPO_ROOT, "industry/topics.json"), "utf8")) as TopicFile;
