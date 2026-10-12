@@ -1,13 +1,23 @@
 {
-  "$comment": "需要真实浏览器才能读的站点：列表条目没有链接、正文要跑 JavaScript 才有（单页应用）。用 scripts/render-ingest.ts 采集并推送给 POST /api/ingest/items。列表或正文能直接读的站不要放这里——那些用后台「信源」页的 rss / web_list / json_list。加一个站就是加一条 profile，先用 --dry-run 核对抽到的正文。",
+  "$comment": "引擎自己读不了的站点。用 scripts/render-ingest.ts 采集并推送给 POST /api/ingest/items。列表或正文能直接读的站不要放这里——那些用后台「信源」页的 rss / web_list / json_list。加一个站就是加一条 profile，先用 --dry-run 核对抓到的正文。",
   "$fields": {
     "sourceId": "推送用的信源 id。站里没有会自动建（external、T2、isolated），要在后台把它改成 editorial 才会上站",
     "sourceName": "推送时用的名字",
+    "mode": "browser（默认）：列表没有链接、正文要跑 JS；api：站自己的 JSON 能读，但列表里的正文是截断的预览",
+    "— browser —": "",
     "listUrl": "列表页地址",
     "rowPattern": "识别列表条目的正则：标题 + 日期，日期必须是最后一个捕获组",
     "detailUrl": "点进详情后地址里必须包含的片段，用来确认这一下真的进了详情页",
     "chrome": "正文里要切掉的页脚和杂项：从第一条匹配的行开始全部丢弃",
-    "skipEmptyBody": "true 时抽不到正文的条目不推送（纯图片公告这类，推了也上不了站，还照样花评分调用）"
+    "— api —": "",
+    "listUrls": "存条目的接口地址，可以给多个（比如分栏目的），按新到旧排",
+    "itemsPath": "条目数组在那个 JSON 里的位置（点号路径，如 data）",
+    "title": "条目的标题字段（点号路径）",
+    "publishedAt": "条目的时间字段；按东八区解释",
+    "url": "读者打开的文章地址模板，{字段名} 会替换成条目里的值",
+    "body": "列表里已经带正文时，写正文字段；没有就用 detail",
+    "detail": "逐条再请求一次拿正文：{ url: 地址模板, body: 正文所在字段 }",
+    "skipEmptyBody": "默认 true：抽不到正文的条目不推送（图片公告这类，推了也上不了站，还照样花评分调用）"
   },
   "sites": [
     {

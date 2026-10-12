@@ -1218,6 +1218,38 @@
       "syndicate_fulltext": false
     },
     {
+      "id": "json-avatr-news",
+      "name": "阿维塔",
+      "kind": "json_list",
+      "config": {
+        "url": "https://www.avatr.com/newscenter",
+        "mode": "html_json_key",
+        "jsonKey": "newsList",
+        "titlePaths": [
+          "title"
+        ],
+        "publishedAtPath": "newsTime",
+        "summaryPaths": [
+          "content"
+        ],
+        "summaryIsBody": true,
+        "externalIdPath": "id",
+        "urlTemplate": "https://www.avatr.com/news?newsChId={raw:newsId}",
+        "_aihot": {
+          "initialBackfillLimit": 8
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
       "id": "web-lixiang",
       "name": "理想汽车",
       "kind": "web_list",
