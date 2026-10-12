@@ -156,7 +156,10 @@ export const STRUCTURE_SYSTEM = promptText("structure", {
   categoryTags: CATEGORY_TAGS.join("、"),
   topicTags: TOPIC_TAGS.join("、"),
   entityTags: ENTITY_TAGS.join("、"),
-  entities: Object.entries(ENTITIES).map(([id, e]) => `${id}（${e.aliases.slice(0, 3).join("/")}）`).join("，"),
+  // Sub-brands and account names travel with the entity (taxonomy's otherNames): without them the model
+  // reads "changan（长安/长安汽车/Changan）" and cannot tell that 深蓝, 阿维塔 or 启源 belong to it.
+  entities: Object.entries(ENTITIES).map(([id, e]) =>
+    `${id}（${e.aliases.slice(0, 3).join("/")}${e.otherNames?.length ? `；子品牌与别称 ${e.otherNames.join("/")}` : ""}）`).join("，"),
 });
 
 /** Keep only quotes present both in the original material and in the text the structure model saw. */

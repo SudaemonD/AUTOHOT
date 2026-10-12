@@ -117,7 +117,7 @@ export const IDENTITY_LEXICON: ReadonlyArray<{ id: string; name: string; pattern
   { id: "li-auto", name: "理想", patterns: [/理想汽车|\bLi ?Auto\b|理想\s?(?:L[6-9]|MEGA|i[68]|ONE)/i] },
   { id: "leapmotor", name: "零跑", patterns: [/零跑|\bLeapmotor\b/i] },
   { id: "geely", name: "吉利", patterns: [/吉利汽车|吉利控股|\bGeely\b|极氪|\bZeekr\b|领克|\bLynk/i] },
-  { id: "changan", name: "长安", patterns: [/长安汽车|\bChangan\b|深蓝|\bDeepal\b|阿维塔|\bAvatr\b/i] },
+  { id: "changan", name: "长安", patterns: [/长安汽车|\bChangan\b|深蓝|\bDeepal\b|阿维塔|\bAvatr\b|启源|\bNEVO\b/i] },
   { id: "chery", name: "奇瑞", patterns: [/奇瑞|\bChery\b|星途|\bExeed\b|\biCAR\b/i] },
   { id: "great-wall", name: "长城", patterns: [/长城汽车|\bGWM\b|哈弗|\bHaval\b|魏牌|\bWEY\b|坦克\s?[3-8]00|欧拉|\bORA\b/i] },
   { id: "saic", name: "上汽", patterns: [/上汽|荣威|\bRoewe\b|名爵|\bMG\b|智己|五菱|\bWuling\b|宝骏/i] },
