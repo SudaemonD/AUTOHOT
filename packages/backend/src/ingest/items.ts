@@ -1,8 +1,11 @@
 // External collection reports (POST /api/ingest/items). Same identity rules and timeline
 // rule as every other entrance: old or future-dated items and explicit backfill never count as
 // today's news and are never pushed. Unknown sources are created isolated, awaiting an operator.
+// A report may carry the text its own renderer read (a page the engine cannot read without JS):
+// that body is stored as the confirmed body, and the engine then has no page to fetch.
 import { sql } from "../db.ts";
 import { upsertMaterial } from "../content/materials.ts";
+import { MAX_BODY_CHARS } from "../editorial/writing.ts";
 import { queueProcessing } from "../jobs/content.ts";
 import { normalizeUrl } from "../lib/url.ts";
 
@@ -21,6 +24,8 @@ interface ItemIn {
   url?: unknown;
   publishedAt?: unknown;
   author?: unknown;
+  /** Plain text the pusher rendered itself; kept as the body, so the engine never reads the page. */
+  body?: unknown;
   raw?: { _aihot?: { backfill?: boolean; baseline?: boolean } } & Record<string, unknown>;
 }
 
@@ -49,6 +54,8 @@ export async function ingestItems(body: { sourceId?: unknown; sourceName?: unkno
     if (!url || seen.has(url)) continue;
     seen.add(url);
     const published = typeof it.publishedAt === "string" ? new Date(it.publishedAt) : null;
+    // The analysis reads at most this much, so a longer report is cut rather than refused.
+    const body = typeof it.body === "string" ? it.body.trim().slice(0, MAX_BODY_CHARS) : "";
     const flags = it.raw?._aihot ?? {};
     const res = await upsertMaterial({
       sourceId: source!.id,
@@ -58,6 +65,7 @@ export async function ingestItems(body: { sourceId?: unknown; sourceName?: unkno
       title,
       author: typeof it.author === "string" ? it.author.slice(0, 200) : null,
       publishedAt: published && Number.isFinite(published.getTime()) ? published : null,
+      bodyText: body || null,
       raw: it.raw ?? null,
       via: "ingest",
       backfill: flags.backfill ? "reported-backfill" : flags.baseline ? "reported-baseline" : null,
